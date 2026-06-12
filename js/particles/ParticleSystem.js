@@ -1,0 +1,361 @@
+/**
+ * ParticleSystem - Facade that ties pool, emitters, and renderer together
+ * Manages the update/render loop and provides high-level effect methods
+ */
+import { ParticlePool } from './ParticlePool.js';
+import { Emitter } from './Emitter.js';
+import { ParticleRenderer } from './ParticleRenderer.js';
+
+export class ParticleSystem {
+  constructor(canvas) {
+    this.pool = new ParticlePool(8000);
+    this.renderer = new ParticleRenderer(canvas);
+    this.emitters = [];
+    this.running = false;
+    this.lastTime = 0;
+    this.densityMultiplier = 1; // for mobile performance scaling
+
+    // Detect mobile and reduce particle count
+    if (window.innerWidth < 768 || navigator.maxTouchPoints > 0) {
+      this.densityMultiplier = 0.5;
+    }
+  }
+
+  start() {
+    if (this.running) return;
+    this.running = true;
+    this.lastTime = performance.now();
+    this._loop();
+  }
+
+  stop() {
+    this.running = false;
+  }
+
+  _loop() {
+    if (!this.running) return;
+
+    const now = performance.now();
+    let dt = (now - this.lastTime) / 1000;
+    this.lastTime = now;
+
+    // Clamp dt to prevent huge jumps on tab switch
+    if (dt > 0.1) dt = 0.016;
+
+    this.update(dt);
+    this.render();
+
+    requestAnimationFrame(() => this._loop());
+  }
+
+  update(dt) {
+    // Update emitters
+    for (let i = this.emitters.length - 1; i >= 0; i--) {
+      const emitter = this.emitters[i];
+      emitter.update(dt);
+      if (!emitter.active) {
+        this.emitters.splice(i, 1);
+      }
+    }
+
+    // Update particles
+    this.pool.update(dt);
+  }
+
+  render() {
+    this.renderer.render(this.pool);
+  }
+
+  /**
+   * Create an emitter and add it to the system
+   */
+  createEmitter(config) {
+    const emitter = new Emitter(this.pool, config);
+    this.emitters.push(emitter);
+    return emitter;
+  }
+
+  /**
+   * Remove all emitters and fade out existing particles
+   */
+  clearEmitters() {
+    this.emitters = [];
+  }
+
+  clearAll() {
+    this.emitters = [];
+    // Release all particles
+    for (let i = 0; i < this.pool.max; i++) {
+      if (this.pool.life[i] > 0) {
+        this.pool.life[i] = 0;
+        this.pool.freeList.push(i);
+      }
+    }
+    this.pool.count = 0;
+  }
+
+  // ==============================
+  // High-level effect methods
+  // ==============================
+
+  /**
+   * Fire effect - upward flames
+   */
+  fire(x, y, intensity = 1) {
+    const count = Math.round(80 * intensity * this.densityMultiplier);
+    return this.createEmitter({
+      x, y,
+      rate: count,
+      duration: 2,
+      angle: -Math.PI / 2,     // upward
+      spread: Math.PI * 0.4,
+      speed: 120 * intensity,
+      speedVariance: 0.6,
+      lifetime: 1.2,
+      gravity: -0.3,            // slight upward pull
+      sizeStart: 8 * intensity,
+      sizeEnd: 1,
+      colorFrom: { r: 1, g: 0.9, b: 0.3 },    // yellow
+      colorTo: { r: 1, g: 0.2, b: 0 },          // red
+      alpha: 0.9,
+      shape: 0,  // circle
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Fire ring - circular fire burst
+   */
+  fireRing(x, y, radius = 100) {
+    const emitters = [];
+    const count = Math.round(16 * this.densityMultiplier);
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const ex = x + Math.cos(angle) * radius;
+      const ey = y + Math.sin(angle) * radius;
+      emitters.push(this.createEmitter({
+        x: ex, y: ey,
+        rate: 15,
+        duration: 1.5,
+        angle: angle - Math.PI, // inward
+        spread: Math.PI * 0.3,
+        speed: 60,
+        lifetime: 0.8,
+        gravity: -0.2,
+        sizeStart: 6,
+        sizeEnd: 0,
+        colorFrom: { r: 1, g: 0.8, b: 0.2 },
+        colorTo: { r: 1, g: 0.1, b: 0 },
+        shape: 0,
+      }));
+    }
+    return emitters;
+  }
+
+  /**
+   * Explosion - radial burst of particles
+   */
+  explosion(x, y, intensity = 1) {
+    const count = Math.round(150 * intensity * this.densityMultiplier);
+    const emitter = this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: 0,
+      spread: Math.PI * 2,      // 360 degrees
+      speed: 300 * intensity,
+      speedVariance: 0.8,
+      lifetime: 1.0,
+      gravity: 0.2,
+      sizeStart: 6,
+      sizeEnd: 0,
+      colorFrom: { r: 1, g: 1, b: 0.8 },    // white-yellow
+      colorTo: { r: 1, g: 0.2, b: 0 },       // red
+      shape: 0,
+      rotSpeed: 5,
+    });
+    return emitter;
+  }
+
+  /**
+   * Golden shower - coins/gold falling from above
+   */
+  goldenShower(centerX, width, intensity = 1) {
+    const count = Math.round(120 * intensity * this.densityMultiplier);
+    return this.createEmitter({
+      x: centerX,
+      y: -20,
+      rate: count,
+      duration: 3,
+      angle: Math.PI / 2,       // downward
+      spread: Math.PI * 0.6,
+      speed: 200,
+      speedVariance: 0.4,
+      lifetime: 3,
+      gravity: 0.4,
+      sizeStart: 6,
+      sizeEnd: 2,
+      colorFrom: { r: 1, g: 0.84, b: 0 },    // gold
+      colorTo: { r: 1, g: 1, b: 0.8 },        // light gold
+      alpha: 0.9,
+      shape: 2,  // diamond
+      rotSpeed: 8,
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Blizzard - snow/wind particles
+   */
+  blizzard(intensity = 1) {
+    const w = window.innerWidth;
+    const count = Math.round(60 * intensity * this.densityMultiplier);
+    return this.createEmitter({
+      x: w / 2,
+      y: -20,
+      rate: count,
+      duration: 4,
+      angle: Math.PI * 0.6,     // downward with wind
+      spread: Math.PI * 0.5,
+      speed: 80,
+      speedVariance: 0.6,
+      lifetime: 4,
+      gravity: 0.1,
+      sizeStart: 4,
+      sizeEnd: 1,
+      colorFrom: { r: 1, g: 1, b: 1 },        // white
+      colorTo: { r: 0.7, g: 0.85, b: 1 },     // ice blue
+      alpha: 0.7,
+      shape: 0,
+      blendMode: 'source-over',
+    });
+  }
+
+  /**
+   * Sparks - short-lived bright particles from a point
+   */
+  sparks(x, y, intensity = 1) {
+    const count = Math.round(40 * intensity * this.densityMultiplier);
+    return this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: -Math.PI / 2,      // upward
+      spread: Math.PI * 0.8,
+      speed: 250,
+      speedVariance: 0.7,
+      lifetime: 0.6,
+      gravity: 0.5,
+      sizeStart: 3,
+      sizeEnd: 0,
+      colorFrom: { r: 1, g: 1, b: 0.8 },    // white
+      colorTo: { r: 1, g: 0.5, b: 0 },       // orange
+      shape: 0,
+      rotSpeed: 3,
+    });
+  }
+
+  /**
+   * Confetti - colorful paper pieces
+   */
+  confetti(centerX, intensity = 1) {
+    const count = Math.round(100 * intensity * this.densityMultiplier);
+    return this.createEmitter({
+      x: centerX,
+      y: -20,
+      burstCount: count,
+      angle: Math.PI / 2,       // downward
+      spread: Math.PI * 0.8,
+      speed: 300,
+      speedVariance: 0.6,
+      lifetime: 3,
+      gravity: 0.3,
+      sizeStart: 8,
+      sizeEnd: 3,
+      colorFrom: { r: 1, g: 0.2, b: 0.6 },    // pink
+      colorTo: { r: 0, g: 0.8, b: 1 },          // cyan
+      shape: 3,  // rect
+      rotSpeed: 12,
+      blendMode: 'source-over',
+    });
+  }
+
+  /**
+   * Starburst - expanding ring of stars
+   */
+  starburst(x, y, intensity = 1) {
+    const count = Math.round(60 * intensity * this.densityMultiplier);
+    return this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 200,
+      speedVariance: 0.3,
+      lifetime: 1.5,
+      gravity: -0.05,
+      sizeStart: 10,
+      sizeEnd: 2,
+      colorFrom: { r: 1, g: 0.84, b: 0 },    // gold
+      colorTo: { r: 1, g: 1, b: 1 },           // white
+      shape: 1,  // star
+      rotSpeed: 6,
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Coin rain - coins falling across the screen
+   */
+  coinRain(intensity = 1) {
+    const w = window.innerWidth;
+    const emitters = [];
+    const columnCount = Math.round(5 * intensity);
+
+    for (let i = 0; i < columnCount; i++) {
+      const x = (w / (columnCount + 1)) * (i + 1);
+      emitters.push(this.createEmitter({
+        x,
+        y: -30,
+        rate: 8,
+        duration: 3,
+        angle: Math.PI / 2,
+        spread: Math.PI * 0.15,
+        speed: 150,
+        speedVariance: 0.3,
+        lifetime: 3,
+        gravity: 0.3,
+        sizeStart: 10,
+        sizeEnd: 4,
+        colorFrom: { r: 1, g: 0.84, b: 0 },
+        colorTo: { r: 1, g: 0.65, b: 0 },
+        shape: 2,  // diamond
+        rotSpeed: 10,
+        blendMode: 'lighter',
+      }));
+    }
+    return emitters;
+  }
+
+  /**
+   * Mystic glow - ethereal particles rising
+   */
+  mysticGlow(x, y, color = { r: 0.3, g: 0.8, b: 0.5 }) {
+    return this.createEmitter({
+      x, y,
+      rate: 30,
+      duration: 2,
+      angle: -Math.PI / 2,
+      spread: Math.PI * 0.5,
+      speed: 50,
+      speedVariance: 0.5,
+      lifetime: 2,
+      gravity: -0.15,
+      sizeStart: 5,
+      sizeEnd: 0,
+      colorFrom: { r: 1, g: 1, b: 1 },
+      colorTo: color,
+      alpha: 0.6,
+      shape: 4,  // ring
+      blendMode: 'lighter',
+    });
+  }
+}

@@ -1,0 +1,121 @@
+/* ============================================
+   iTiger Theme - Las Vegas 🎰
+   Neon, electric, hot pink, confetti
+   ============================================ */
+
+[data-theme="las-vegas"] {
+  --bg-primary: #0a0020;
+  --bg-secondary: #1a0040;
+  --bg-gradient: linear-gradient(180deg, #0a0020 0%, #1a0040 30%, #0d0030 60%, #200050 100%);
+
+  --gold: #FFD700;
+  --gold-dark: #CC8800;
+  --gold-light: #FFEE88;
+  --accent: #FF1493;
+  --accent-secondary: #00BFFF;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #CC88FF;
+  --text-muted: #8855AA;
+
+  --font-display: 'Orbitron', 'Arial Black', sans-serif;
+  --font-body: 'Segoe UI', system-ui, sans-serif;
+
+  --panel-bg: rgba(26, 0, 64, 0.8);
+  --panel-border: rgba(255, 20, 147, 0.3);
+  --panel-shadow: 0 4px 30px rgba(255, 20, 147, 0.1);
+
+  --reel-bg: rgba(10, 0, 32, 0.9);
+  --reel-border: rgba(255, 20, 147, 0.4);
+  --reel-shadow:
+    0 0 30px rgba(255, 20, 147, 0.2),
+    0 0 60px rgba(0, 191, 255, 0.1),
+    inset 0 0 40px rgba(0, 0, 0, 0.5);
+  --reel-cell-bg: rgba(26, 0, 64, 0.3);
+  --reel-cell-border: rgba(255, 20, 147, 0.1);
+  --reel-divider: rgba(255, 20, 147, 0.15);
+
+  --symbol-size: clamp(48px, 11vw, 90px);
+  --symbol-glow: rgba(255, 20, 147, 0.5);
+
+  --btn-primary-bg: linear-gradient(135deg, #FF1493, #FF69B4, #FF1493);
+  --btn-primary-color: #FFFFFF;
+  --btn-primary-glow: 0 0 25px rgba(255, 20, 147, 0.5), 0 0 50px rgba(0, 191, 255, 0.15);
+  --btn-primary-hover-glow: 0 0 40px rgba(255, 20, 147, 0.8), 0 0 80px rgba(0, 191, 255, 0.25);
+  --btn-secondary-bg: rgba(255, 20, 147, 0.1);
+  --btn-secondary-color: #FF69B4;
+  --btn-secondary-border: rgba(255, 20, 147, 0.3);
+
+  --win-flash: #FF1493;
+  --win-text-gradient: linear-gradient(135deg, #FF1493, #FFD700, #00BFFF, #FF1493);
+  --gold-glow: rgba(255, 20, 147, 0.6);
+
+  --logo-gradient: linear-gradient(135deg, #FF1493, #FFD700, #00BFFF);
+  --logo-glow: rgba(255, 20, 147, 0.5);
+
+  --bet-bg: rgba(26, 0, 64, 0.6);
+  --bet-border: rgba(255, 20, 147, 0.25);
+
+  --particle-primary: #FF1493;
+  --particle-secondary: #00BFFF;
+}
+
+/* Vegas neon glow background */
+[data-theme="las-vegas"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 85%, rgba(255, 20, 147, 0.1) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 15%, rgba(0, 191, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.03) 0%, transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+  animation: neonPulse 3s ease-in-out infinite;
+}
+
+[data-theme="las-vegas"] .slot-machine {
+  border-color: var(--accent);
+  border-image: none;
+  box-shadow:
+    0 0 30px rgba(255, 20, 147, 0.2),
+    0 0 60px rgba(0, 191, 255, 0.1),
+    inset 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="las-vegas"] .slot-machine::before,
+[data-theme="las-vegas"] .slot-machine::after {
+  border-color: #FF1493;
+  animation: neonFlicker 4s ease-in-out infinite;
+}
+
+[data-theme="las-vegas"] .slot-machine::after {
+  animation-delay: -2s;
+}
+
+[data-theme="las-vegas"] .spin-btn {
+  background: linear-gradient(135deg, #FF1493, #FF69B4);
+  border-color: #FF69B4;
+  color: #FFF;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+[data-theme="las-vegas"] .logo {
+  animation: neonFlicker 5s ease-in-out infinite;
+}
+
+[data-theme="las-vegas"] .theme-btn.active {
+  color: #FF1493;
+  border-color: #FF1493;
+  box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+}
+
+/* Neon strip decorations */
+[data-theme="las-vegas"] .reels-container {
+  border-color: rgba(255, 20, 147, 0.3);
+  box-shadow: inset 0 0 20px rgba(255, 20, 147, 0.05);
+}
+
+[data-theme="las-vegas"] .reel {
+  border-color: rgba(0, 191, 255, 0.15);
+}

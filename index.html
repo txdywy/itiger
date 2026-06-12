@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="las-vegas">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0020">
+  <meta name="description" content="iTiger - Spectacular Slot Machine Game with stunning visual effects">
+  <title>🎰 iTiger - Slot Machine</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/themes/base-theme.css">
+  <link rel="stylesheet" href="css/themes/las-vegas.css">
+  <link rel="stylesheet" href="css/themes/egypt.css">
+  <link rel="stylesheet" href="css/themes/maya.css">
+  <link rel="stylesheet" href="css/themes/underwater.css">
+  <link rel="stylesheet" href="css/themes/space.css">
+  <link rel="stylesheet" href="css/slot-machine.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- Favicon (inline SVG) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎰</text></svg>">
+
+  <style>
+    /* Loading screen */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a1a;
+      z-index: 9999;
+    }
+
+    .loading-logo {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      animation: pulseScale 1.5s ease-in-out infinite;
+    }
+
+    .loading-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      color: #FFD700;
+      letter-spacing: 0.2em;
+      margin-bottom: 30px;
+    }
+
+    .loading-bar {
+      width: 200px;
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD700, #FF6B00);
+      border-radius: 2px;
+      animation: loadingBar 1.5s ease-in-out forwards;
+    }
+
+    /* Reel spinning blur */
+    .reel-spinning .reel-strip {
+      filter: blur(1px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-logo">🎰</div>
+    <div class="loading-text">iTIGER</div>
+    <div class="loading-bar">
+      <div class="loading-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- VFX Canvas (full viewport, behind everything) -->
+  <canvas id="vfx-canvas"></canvas>
+
+  <!-- Free Spins Banner -->
+  <div id="free-spins-banner" class="free-spins-banner">
+    🌀 FREE SPINS! <span class="free-spins-count">10</span> remaining — 2× Multiplier!
+  </div>
+
+  <!-- Main Game Container -->
+  <div class="game-container">
+
+    <!-- Header Bar -->
+    <div class="header-bar">
+      <div class="logo">🎰 iTIGER</div>
+      <div class="balance-display">
+        <span class="coin-icon">🪙</span>
+        <span id="balance-amount" class="balance-amount">10,000</span>
+        <button id="btn-add-coins" class="btn-add-coins" title="Add 10,000 coins">+ ADD</button>
+      </div>
+      <button id="btn-settings" class="settings-btn" title="Settings">⚙️</button>
+    </div>
+
+    <!-- Theme Selector -->
+    <div class="theme-selector">
+      <button class="theme-btn active" data-theme="las-vegas">
+        <span class="theme-icon">🎰</span>
+        <span>Vegas</span>
+      </button>
+      <button class="theme-btn" data-theme="egypt">
+        <span class="theme-icon">🏛️</span>
+        <span>Egypt</span>
+      </button>
+      <button class="theme-btn" data-theme="maya">
+        <span class="theme-icon">🌿</span>
+        <span>Maya</span>
+      </button>
+      <button class="theme-btn" data-theme="underwater">
+        <span class="theme-icon">🌊</span>
+        <span>Ocean</span>
+      </button>
+      <button class="theme-btn" data-theme="space">
+        <span class="theme-icon">🚀</span>
+        <span>Space</span>
+      </button>
+    </div>
+
+    <!-- Slot Machine -->
+    <div class="slot-machine">
+      <!-- Multiplier Display -->
+      <div id="multiplier-display" class="multiplier-display">×2</div>
+
+      <!-- Reels Container -->
+      <div id="reels-container" class="reels-container">
+        <!-- Reels built dynamically by ReelManager -->
+      </div>
+
+      <!-- Controls Area -->
+      <div class="controls-area">
+        <!-- Lines Controls -->
+        <div class="lines-controls">
+          <span class="bet-label">LINES</span>
+          <button id="btn-lines-down" class="btn-bet">−</button>
+          <span id="lines-value" class="lines-value">20</span>
+          <button id="btn-lines-up" class="btn-bet">+</button>
+        </div>
+
+        <!-- Bet Controls -->
+        <div class="bet-controls" style="position: relative;">
+          <span class="bet-label">BET</span>
+          <button id="btn-bet-down" class="btn-bet">−</button>
+          <span id="bet-value" class="bet-value">100</span>
+          <button id="btn-bet-up" class="btn-bet">+</button>
+          <div class="max-bet-indicator">MAX</div>
+        </div>
+
+        <!-- Spin Button -->
+        <button id="spin-btn" class="spin-btn">
+          SPIN
+        </button>
+
+        <!-- Auto Spin -->
+        <button id="btn-auto" class="auto-spin-btn">
+          AUTO
+        </button>
+      </div>
+
+      <!-- Info Bar -->
+      <div class="info-bar">
+        <div class="info-item">
+          <span class="label">TOTAL BET</span>
+          <span id="total-bet" class="value">2,000</span>
+        </div>
+        <div class="info-item">
+          <span class="label">FREE SPINS</span>
+          <span id="free-spins-count" class="value">0</span>
+        </div>
+        <div class="info-item">
+          <span class="label">SPACE</span>
+          <span class="value">to spin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Win History -->
+    <div id="win-history" class="win-history">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- Win Overlay -->
+  <div id="win-overlay" class="win-overlay">
+    <div id="win-text" class="win-text"></div>
+    <div id="win-amount" class="win-amount-display"></div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div id="settings-overlay" class="settings-overlay"></div>
+  <div id="settings-panel" class="settings-panel">
+    <button id="close-settings" class="close-settings">✕</button>
+    <h3>⚙️ Settings</h3>
+
+    <div class="settings-group">
+      <label>Sound</label>
+      <button id="btn-mute" class="btn-bet" style="width: auto; padding: 6px 16px; font-size: 1.2rem;">🔊</button>
+    </div>
+
+    <div class="settings-group">
+      <label>SFX Volume</label>
+      <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.5">
+    </div>
+
+    <div class="settings-group">
+      <label>Particle Effects</label>
+      <select id="particle-density">
+        <option value="1">High</option>
+        <option value="0.5">Medium</option>
+        <option value="0.25">Low</option>
+      </select>
+    </div>
+
+    <div class="settings-group" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--panel-border);">
+      <label style="font-size: 0.7rem; opacity: 0.5;">iTiger v1.0 — Pure frontend slot machine game<br>Built with ❤️ and Canvas VFX</label>
+    </div>
+  </div>
+
+  <!-- GSAP (loaded before modules) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Game Modules -->
+  <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* ============================================
+   iTiger Theme - Ancient Egypt 🏛️
+   Gold, sand, hieroglyphs, torch fire
+   ============================================ */
+
+[data-theme="egypt"] {
+  --bg-primary: #1a0a00;
+  --bg-secondary: #2d1810;
+  --bg-gradient: linear-gradient(180deg, #0d0500 0%, #2d1810 30%, #1a0a00 60%, #3d2010 100%);
+
+  --gold: #FFD700;
+  --gold-dark: #B8860B;
+  --gold-light: #FFF8DC;
+  --accent: #CD853F;
+  --accent-secondary: #FF6600;
+
+  --text-primary: #F5DEB3;
+  --text-secondary: #DEB887;
+  --text-muted: #8B7355;
+
+  --font-display: 'Cinzel', 'Georgia', serif;
+  --font-body: 'Cormorant Garamond', 'Georgia', serif;
+
+  --panel-bg: rgba(45, 24, 16, 0.8);
+  --panel-border: rgba(184, 134, 11, 0.4);
+  --panel-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+
+  --reel-bg: rgba(26, 10, 0, 0.9);
+  --reel-border: rgba(184, 134, 11, 0.5);
+  --reel-shadow: 0 0 30px rgba(255, 215, 0, 0.15), 0 0 60px rgba(255, 102, 0, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.6);
+  --reel-cell-bg: rgba(45, 24, 16, 0.4);
+  --reel-cell-border: rgba(184, 134, 11, 0.15);
+  --reel-divider: rgba(184, 134, 11, 0.2);
+
+  --symbol-size: clamp(48px, 11vw, 90px);
+  --symbol-glow: rgba(255, 215, 0, 0.5);
+
+  --btn-primary-bg: linear-gradient(135deg, #B8860B, #FFD700, #B8860B);
+  --btn-primary-color: #1a0a00;
+  --btn-primary-glow: 0 0 25px rgba(255, 215, 0, 0.4), 0 0 50px rgba(255, 102, 0, 0.15);
+  --btn-primary-hover-glow: 0 0 40px rgba(255, 215, 0, 0.7), 0 0 80px rgba(255, 102, 0, 0.25);
+  --btn-secondary-bg: rgba(45, 24, 16, 0.6);
+  --btn-secondary-color: #F5DEB3;
+  --btn-secondary-border: rgba(184, 134, 11, 0.3);
+
+  --win-flash: #FFD700;
+  --win-text-gradient: linear-gradient(135deg, #FFD700, #FF8C00, #FFD700, #B8860B);
+  --gold-glow: rgba(255, 215, 0, 0.7);
+
+  --logo-gradient: linear-gradient(135deg, #FFD700, #CD853F, #FFD700);
+  --logo-glow: rgba(255, 215, 0, 0.6);
+
+  --bet-bg: rgba(45, 24, 16, 0.6);
+  --bet-border: rgba(184, 134, 11, 0.3);
+
+  --particle-primary: #FF6600;
+  --particle-secondary: #FFD700;
+}
+
+/* Egypt-specific background decorations */
+[data-theme="egypt"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(255, 102, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(205, 133, 63, 0.06) 0%, transparent 40%);
+  z-index: 0;
+  pointer-events: none;
+  animation: heatShimmer 4s ease-in-out infinite;
+}
+
+/* Hieroglyph border pattern */
+[data-theme="egypt"] .slot-machine {
+  border-image: repeating-linear-gradient(
+    90deg,
+    var(--gold-dark) 0px,
+    var(--gold-dark) 10px,
+    transparent 10px,
+    transparent 15px,
+    var(--gold) 15px,
+    var(--gold) 16px,
+    transparent 16px,
+    transparent 20px
+  ) 2;
+}
+
+[data-theme="egypt"] .slot-machine::before,
+[data-theme="egypt"] .slot-machine::after {
+  border-color: var(--gold-dark);
+  opacity: 0.6;
+  width: 50px;
+  height: 50px;
+}
+
+[data-theme="egypt"] .spin-btn {
+  background: radial-gradient(circle, #FFD700, #B8860B);
+  border-color: #FFD700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(0,0,0,0.2);
+}
+
+[data-theme="egypt"] .spin-btn:hover {
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), inset 0 0 15px rgba(0,0,0,0.1);
+}

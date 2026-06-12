@@ -1,0 +1,131 @@
+/* ============================================
+   iTiger - Responsive Styles
+   ============================================ */
+
+/* Mobile First adjustments */
+@media (max-width: 480px) {
+  .header-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .slot-machine {
+    padding: 8px;
+  }
+
+  .controls-area {
+    gap: 6px;
+  }
+
+  .spin-btn {
+    width: 80px;
+    height: 80px;
+  }
+
+  .bet-controls,
+  .lines-controls {
+    padding: 4px 8px;
+  }
+
+  .info-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .theme-selector {
+    border-radius: 12px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+  .slot-machine {
+    max-width: 550px;
+  }
+
+  .spin-btn {
+    width: 95px;
+    height: 95px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .slot-machine {
+    max-width: 650px;
+  }
+
+  .spin-btn {
+    width: 110px;
+    height: 110px;
+    font-size: 1rem;
+  }
+
+  .symbol-cell {
+    font-size: 3.2rem;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .spin-btn::before {
+    display: none;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .game-container {
+    padding: 4px;
+    gap: 4px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .header-bar {
+    width: 100%;
+    padding: 4px 12px;
+  }
+
+  .slot-machine {
+    width: auto;
+    max-width: 60%;
+    padding: 6px;
+  }
+
+  .symbol-cell {
+    height: clamp(36px, 8vh, 60px);
+    font-size: clamp(1.2rem, 3vh, 2rem);
+  }
+
+  .spin-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 0.6rem;
+  }
+
+  .controls-area {
+    flex-direction: column;
+  }
+}
+
+/* High DPI adjustments */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .slot-machine {
+    border-width: 1px;
+  }
+}

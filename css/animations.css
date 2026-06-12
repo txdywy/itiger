@@ -1,0 +1,168 @@
+/* ============================================
+   iTiger - CSS Keyframe Animations
+   ============================================ */
+
+/* Coin spin */
+@keyframes coinSpin {
+  0%, 100% { transform: rotateY(0deg); }
+  50% { transform: rotateY(180deg); }
+}
+
+/* Shimmer effect for win amounts */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Glow pulse */
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px var(--glow-color, rgba(255,215,0,0.5))); }
+  50% { filter: drop-shadow(0 0 20px var(--glow-color, rgba(255,215,0,0.9))); }
+}
+
+/* Neon flicker */
+@keyframes neonFlicker {
+  0%, 100% { opacity: 1; }
+  4% { opacity: 0.9; }
+  6% { opacity: 1; }
+  8% { opacity: 0.4; }
+  9% { opacity: 1; }
+  50% { opacity: 1; }
+  52% { opacity: 0.8; }
+  54% { opacity: 1; }
+}
+
+/* Fire flicker */
+@keyframes fireFlicker {
+  0%, 100% { text-shadow: 0 0 4px #ff6600, 0 0 11px #ff6600, 0 0 19px #ff6600, 0 0 40px #ff0000; }
+  25% { text-shadow: 0 0 4px #ff6600, 0 0 14px #ff6600, 0 0 22px #ff6600, 0 0 45px #ff3300; }
+  50% { text-shadow: 0 0 4px #ff6600, 0 0 11px #ff6600, 0 0 25px #ff6600, 0 0 50px #ff0000; }
+  75% { text-shadow: 0 0 4px #ff6600, 0 0 8px #ff6600, 0 0 16px #ff6600, 0 0 38px #ff3300; }
+}
+
+/* Pulse scale */
+@keyframes pulseScale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Float up */
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+}
+
+/* Screen shake */
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-5px, -3px) rotate(-0.5deg); }
+  20% { transform: translate(4px, 2px) rotate(0.5deg); }
+  30% { transform: translate(-3px, 4px) rotate(-0.3deg); }
+  40% { transform: translate(5px, -2px) rotate(0.3deg); }
+  50% { transform: translate(-2px, 3px) rotate(0deg); }
+  60% { transform: translate(3px, -4px) rotate(0.5deg); }
+  70% { transform: translate(-4px, 1px) rotate(-0.5deg); }
+  80% { transform: translate(2px, -3px) rotate(0.2deg); }
+  90% { transform: translate(-1px, 2px) rotate(-0.2deg); }
+}
+
+/* Flash overlay */
+@keyframes flashOverlay {
+  0% { opacity: 0; }
+  10% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* Starburst expand */
+@keyframes starburst {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(3) rotate(180deg); opacity: 0; }
+}
+
+/* Symbol landing bounce */
+@keyframes symbolLand {
+  0% { transform: scale(1.3); }
+  40% { transform: scale(0.9); }
+  70% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Win counter tick */
+@keyframes winTick {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Background heat shimmer */
+@keyframes heatShimmer {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50% { filter: brightness(1.05) saturate(1.1); }
+}
+
+/* Neon pulse background */
+@keyframes neonPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Torch flicker background */
+@keyframes torchFlicker {
+  0%, 100% { opacity: 0.4; filter: brightness(1); }
+  25% { opacity: 0.35; filter: brightness(0.95); }
+  50% { opacity: 0.45; filter: brightness(1.05); }
+  75% { opacity: 0.38; filter: brightness(0.98); }
+}
+
+/* Bubble float */
+@keyframes bubbleFloat {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 0.6; transform: translateY(90vh) scale(0.5); }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* Star twinkle */
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Reel blur during spin */
+@keyframes reelBlur {
+  0% { filter: blur(0px); }
+  20% { filter: blur(2px); }
+  80% { filter: blur(2px); }
+  100% { filter: blur(0px); }
+}
+
+/* Spin button ripple */
+@keyframes spinRipple {
+  0% { transform: scale(0); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Loading bar */
+@keyframes loadingBar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Fade in up */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Fade out */
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Jackpot spotlight */
+@keyframes spotlight {
+  0% { background: radial-gradient(circle at center, rgba(255,215,0,0) 0%, rgba(0,0,0,0.8) 100%); }
+  50% { background: radial-gradient(circle at center, rgba(255,215,0,0.3) 0%, rgba(0,0,0,0.6) 100%); }
+  100% { background: radial-gradient(circle at center, rgba(255,215,0,0) 0%, rgba(0,0,0,0.8) 100%); }
+}

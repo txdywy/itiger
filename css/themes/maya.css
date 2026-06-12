@@ -1,0 +1,106 @@
+/* ============================================
+   iTiger Theme - Maya Temple 🌿
+   Jade, emerald, stone, mystic green
+   ============================================ */
+
+[data-theme="maya"] {
+  --bg-primary: #0a1a0a;
+  --bg-secondary: #1a2a10;
+  --bg-gradient: linear-gradient(180deg, #050d05 0%, #1a2a10 30%, #0a1a0a 60%, #1f3520 100%);
+
+  --gold: #50C878;
+  --gold-dark: #2E8B57;
+  --gold-light: #98FB98;
+  --accent: #DAA520;
+  --accent-secondary: #00CED1;
+
+  --text-primary: #E0F0D0;
+  --text-secondary: #8FBC8F;
+  --text-muted: #556B2F;
+
+  --font-display: 'Cinzel', 'Georgia', serif;
+  --font-body: 'Cormorant Garamond', 'Georgia', serif;
+
+  --panel-bg: rgba(26, 42, 16, 0.8);
+  --panel-border: rgba(80, 200, 120, 0.3);
+  --panel-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+
+  --reel-bg: rgba(10, 26, 10, 0.9);
+  --reel-border: rgba(80, 200, 120, 0.35);
+  --reel-shadow:
+    0 0 30px rgba(80, 200, 120, 0.12),
+    0 0 60px rgba(218, 165, 32, 0.06),
+    inset 0 0 40px rgba(0, 0, 0, 0.5);
+  --reel-cell-bg: rgba(26, 42, 16, 0.3);
+  --reel-cell-border: rgba(80, 200, 120, 0.1);
+  --reel-divider: rgba(80, 200, 120, 0.15);
+
+  --symbol-size: clamp(48px, 11vw, 90px);
+  --symbol-glow: rgba(80, 200, 120, 0.5);
+
+  --btn-primary-bg: linear-gradient(135deg, #2E8B57, #50C878, #2E8B57);
+  --btn-primary-color: #0a1a0a;
+  --btn-primary-glow: 0 0 25px rgba(80, 200, 120, 0.4), 0 0 50px rgba(218, 165, 32, 0.1);
+  --btn-primary-hover-glow: 0 0 40px rgba(80, 200, 120, 0.7), 0 0 80px rgba(218, 165, 32, 0.2);
+  --btn-secondary-bg: rgba(80, 200, 120, 0.08);
+  --btn-secondary-color: #98FB98;
+  --btn-secondary-border: rgba(80, 200, 120, 0.25);
+
+  --win-flash: #50C878;
+  --win-text-gradient: linear-gradient(135deg, #50C878, #DAA520, #00CED1, #50C878);
+  --gold-glow: rgba(80, 200, 120, 0.6);
+
+  --logo-gradient: linear-gradient(135deg, #50C878, #DAA520, #50C878);
+  --logo-glow: rgba(80, 200, 120, 0.5);
+
+  --bet-bg: rgba(26, 42, 16, 0.6);
+  --bet-border: rgba(80, 200, 120, 0.2);
+
+  --particle-primary: #50C878;
+  --particle-secondary: #DAA520;
+}
+
+/* Maya jungle atmosphere */
+[data-theme="maya"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 70%, rgba(80, 200, 120, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 70% 30%, rgba(218, 165, 32, 0.04) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, rgba(0, 206, 209, 0.03) 0%, transparent 40%);
+  z-index: 0;
+  pointer-events: none;
+  animation: torchFlicker 5s ease-in-out infinite;
+}
+
+/* Stone frame effect */
+[data-theme="maya"] .slot-machine {
+  border-image: none;
+  border-color: rgba(80, 200, 120, 0.3);
+  box-shadow:
+    0 0 30px rgba(80, 200, 120, 0.12),
+    inset 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="maya"] .slot-machine::before,
+[data-theme="maya"] .slot-machine::after {
+  border-color: #50C878;
+  opacity: 0.5;
+}
+
+[data-theme="maya"] .spin-btn {
+  background: radial-gradient(circle, #50C878, #2E8B57);
+  border-color: #50C878;
+  box-shadow: 0 0 25px rgba(80, 200, 120, 0.4), inset 0 0 10px rgba(0,0,0,0.2);
+}
+
+[data-theme="maya"] .reels-container {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(80, 200, 120, 0.2);
+}
+
+/* Vine-like decorations on reel edges */
+[data-theme="maya"] .reel {
+  border-color: rgba(80, 200, 120, 0.12);
+}

@@ -1,0 +1,296 @@
+/* ============================================
+   iTiger Slot Machine - Base Styles
+   ============================================ */
+
+/* CSS Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-body, 'Segoe UI', system-ui, sans-serif);
+  color: var(--text-primary, #fff);
+  background: var(--bg-primary, #0a0a1a);
+  background-image: var(--bg-gradient);
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* VFX Canvas - full viewport behind everything */
+#vfx-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Main Game Container */
+.game-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(8px, 2vw, 24px);
+  gap: clamp(8px, 1.5vh, 16px);
+}
+
+/* Header Bar */
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 700px;
+  padding: clamp(6px, 1.5vw, 16px) clamp(12px, 3vw, 24px);
+  background: var(--panel-bg, rgba(0,0,0,0.6));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--panel-border, rgba(255,255,255,0.1));
+  border-radius: 12px;
+}
+
+.logo {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: clamp(1.2rem, 3.5vw, 2rem);
+  font-weight: 900;
+  background: var(--logo-gradient, linear-gradient(135deg, #FFD700, #FF6B00));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 8px var(--logo-glow, rgba(255,215,0,0.5)));
+  letter-spacing: 0.05em;
+}
+
+.balance-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+  font-weight: 700;
+  color: var(--gold, #FFD700);
+}
+
+.balance-display .coin-icon {
+  font-size: 1.2em;
+  animation: coinSpin 2s ease-in-out infinite;
+}
+
+.balance-amount {
+  min-width: 80px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-add-coins {
+  padding: 4px 12px;
+  font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+  font-weight: 700;
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  color: #000;
+  background: var(--gold, #FFD700);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.btn-add-coins:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px var(--gold-glow, rgba(255,215,0,0.6));
+}
+
+.btn-add-coins:active {
+  transform: scale(0.95);
+}
+
+/* Theme Selector */
+.theme-selector {
+  display: flex;
+  gap: clamp(4px, 1vw, 10px);
+  padding: clamp(4px, 1vw, 8px);
+  background: var(--panel-bg, rgba(0,0,0,0.4));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--panel-border, rgba(255,255,255,0.1));
+  border-radius: 50px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.theme-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px clamp(10px, 2vw, 18px);
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: clamp(0.6rem, 1.4vw, 0.8rem);
+  font-weight: 600;
+  color: var(--text-secondary, #aaa);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.theme-btn .theme-icon {
+  font-size: 1.2em;
+}
+
+.theme-btn:hover {
+  color: var(--text-primary, #fff);
+  background: rgba(255,255,255,0.08);
+}
+
+.theme-btn.active {
+  color: var(--gold, #FFD700);
+  border-color: var(--gold, #FFD700);
+  background: rgba(255,215,0,0.1);
+  box-shadow: 0 0 15px rgba(255,215,0,0.2);
+}
+
+/* Win Display Overlay */
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.win-overlay.active {
+  opacity: 1;
+}
+
+.win-text {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: clamp(2rem, 8vw, 5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--win-text-gradient, linear-gradient(135deg, #FFD700, #FF6B00, #FFD700));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px var(--gold-glow, rgba(255,215,0,0.8)));
+  text-align: center;
+}
+
+.win-amount-display {
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--gold, #FFD700);
+  text-shadow: 0 0 30px var(--gold-glow, rgba(255,215,0,0.8));
+  margin-top: 10px;
+}
+
+/* Free Spins Banner */
+.free-spins-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  background: linear-gradient(90deg, var(--accent, #FF6B00), var(--gold, #FFD700), var(--accent, #FF6B00));
+  text-align: center;
+  font-family: var(--font-display, 'Orbitron', sans-serif);
+  font-size: clamp(0.8rem, 2vw, 1.1rem);
+  font-weight: 700;
+  color: #000;
+  z-index: 50;
+  transform: translateY(-100%);
+  transition: transform 0.4s ease;
+}
+
+.free-spins-banner.active {
+  transform: translateY(0);
+}
+
+/* Settings panel */
+.settings-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #888);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.settings-btn:hover {
+  color: var(--text-primary, #fff);
+  transform: rotate(30deg);
+}
+
+/* Scrollbar for win history */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--panel-border, rgba(255,255,255,0.2));
+  border-radius: 2px;
+}

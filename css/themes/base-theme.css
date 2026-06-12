@@ -1,0 +1,93 @@
+/* ============================================
+   iTiger - Base Theme (Custom Properties Schema)
+   All theme files override these properties
+   ============================================ */
+
+:root {
+  /* Background */
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #12122a;
+  --bg-gradient: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%);
+
+  /* Colors */
+  --gold: #FFD700;
+  --gold-dark: #B8860B;
+  --gold-light: #FFF8DC;
+  --accent: #FF6B00;
+  --accent-secondary: #FF1493;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #aaaaaa;
+  --text-muted: #666666;
+
+  /* Typography */
+  --font-display: 'Orbitron', 'Segoe UI', sans-serif;
+  --font-body: 'Segoe UI', system-ui, sans-serif;
+
+  /* Panel / Glass */
+  --panel-bg: rgba(0, 0, 0, 0.5);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --panel-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+
+  /* Reel Area */
+  --reel-bg: rgba(0, 0, 0, 0.7);
+  --reel-border: rgba(255, 215, 0, 0.3);
+  --reel-shadow: 0 0 20px rgba(255, 215, 0, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.5);
+  --reel-cell-bg: rgba(255, 255, 255, 0.03);
+  --reel-cell-border: rgba(255, 255, 255, 0.05);
+  --reel-divider: rgba(255, 255, 255, 0.08);
+
+  /* Symbol */
+  --symbol-size: clamp(48px, 11vw, 90px);
+  --symbol-glow: rgba(255, 215, 0, 0.4);
+
+  /* Buttons */
+  --btn-primary-bg: linear-gradient(135deg, #FFD700, #FF8C00);
+  --btn-primary-color: #000;
+  --btn-primary-glow: 0 0 20px rgba(255, 215, 0, 0.4);
+  --btn-primary-hover-glow: 0 0 35px rgba(255, 215, 0, 0.7);
+  --btn-secondary-bg: rgba(255, 255, 255, 0.08);
+  --btn-secondary-color: var(--text-primary);
+  --btn-secondary-border: rgba(255, 255, 255, 0.15);
+
+  /* Win effects */
+  --win-flash: #FFD700;
+  --win-text-gradient: linear-gradient(135deg, #FFD700, #FF6B00, #FFD700);
+  --gold-glow: rgba(255, 215, 0, 0.6);
+
+  /* Logo */
+  --logo-gradient: linear-gradient(135deg, #FFD700, #FF6B00);
+  --logo-glow: rgba(255, 215, 0, 0.5);
+
+  /* Bet display */
+  --bet-bg: rgba(0, 0, 0, 0.4);
+  --bet-border: rgba(255, 255, 255, 0.1);
+  --bet-active: var(--gold);
+
+  /* Payline colors */
+  --payline-1: #FF0000;
+  --payline-2: #00FF00;
+  --payline-3: #0088FF;
+  --payline-4: #FF00FF;
+  --payline-5: #FFFF00;
+  --payline-6: #00FFFF;
+  --payline-7: #FF8800;
+  --payline-8: #8800FF;
+  --payline-9: #FF0088;
+  --payline-10: #00FF88;
+  --payline-11: #88FF00;
+  --payline-12: #FF4400;
+  --payline-13: #0044FF;
+  --payline-14: #FF0044;
+  --payline-15: #44FF00;
+  --payline-16: #00FF44;
+  --payline-17: #4400FF;
+  --payline-18: #FF8844;
+  --payline-19: #44FF88;
+  --payline-20: #8844FF;
+
+  /* Particle defaults */
+  --particle-primary: #FFD700;
+  --particle-secondary: #FF6B00;
+}
