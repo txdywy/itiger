@@ -7,6 +7,7 @@ export class ParticleRenderer {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.sprites = {};
+    this._screenEffects = []; // managed externally by ParticleSystem
 
     // Pre-render particle shapes to offscreen canvases
     this._createSprites();
@@ -150,10 +151,53 @@ export class ParticleRenderer {
   }
 
   render(pool) {
-    if (pool.count === 0) return;
+    if (pool.count === 0 && !this._screenEffects?.length) return;
 
     const ctx = this.ctx;
-    ctx.clearRect(0, 0, this.canvas.width / this.dpr, this.canvas.height / this.dpr);
+    const w = this.canvas.width / this.dpr;
+    const h = this.canvas.height / this.dpr;
+    ctx.clearRect(0, 0, w, h);
+
+    // Screen effects (color waves, spotlights) — drawn first with additive blend
+    if (this._screenEffects?.length) {
+      ctx.globalCompositeOperation = 'lighter';
+      for (const fx of this._screenEffects) {
+        const progress = fx.elapsed / fx.duration;
+        if (fx.type === 'colorWave') {
+          const maxR = Math.sqrt(w * w + h * h);
+          const radius = maxR * progress;
+          const alpha = (1 - progress) * 0.18;
+          if (alpha > 0.005) {
+            const grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, radius);
+            const [r, g, b] = fx.color;
+            grad.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
+            grad.addColorStop(0.5, `rgba(${r},${g},${b},${alpha * 0.4})`);
+            grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+          }
+        } else if (fx.type === 'spotlightPulse') {
+          const pulse = Math.sin(progress * Math.PI);
+          const alpha = pulse * 0.12;
+          if (alpha > 0.005) {
+            const [r, g, b] = fx.color;
+            const spotR = Math.min(w, h) * (0.3 + pulse * 0.35);
+            const grad = ctx.createRadialGradient(
+              fx.x * w, fx.y * h, 0,
+              fx.x * w, fx.y * h, spotR
+            );
+            grad.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
+            grad.addColorStop(0.4, `rgba(${r},${g},${b},${alpha * 0.5})`);
+            grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+          }
+        }
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    if (pool.count === 0) return;
 
     const shapeNames = ['circle', 'star', 'diamond', 'rect', 'ring', 'gem', 'gemDollar'];
 
@@ -171,18 +215,16 @@ export class ParticleRenderer {
     // Pass 1: normal blend (source-over)
     ctx.globalCompositeOperation = 'source-over';
     for (const key in batches) {
+      if (key % 2 !== 0) continue;
       const shapeIdx = key >> 1;
-      const blend = key % 2;
-      if (blend !== 0) continue;
       this._renderBatch(pool, ctx, batches[key], shapeNames[shapeIdx] || 'circle');
     }
 
-    // Pass 2: additive blend (lighter)
+    // Pass 2: additive blend (lighter) — includes trail rendering
     ctx.globalCompositeOperation = 'lighter';
     for (const key in batches) {
+      if (key % 2 !== 1) continue;
       const shapeIdx = key >> 1;
-      const blend = key % 2;
-      if (blend !== 1) continue;
       this._renderBatch(pool, ctx, batches[key], shapeNames[shapeIdx] || 'circle');
     }
 
@@ -193,138 +235,155 @@ export class ParticleRenderer {
     const sprite = this.sprites[spriteName];
     if (!sprite) return;
 
-    let lastR = -1, lastG = -1, lastB = -1;
-
     for (let n = 0; n < indices.length; n++) {
       const i = indices[n];
       const size = pool.size[i];
       const alpha = pool.a[i] * pool.life[i];
       if (alpha < 0.01) continue;
 
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.translate(pool.x[i], pool.y[i]);
-      ctx.rotate(pool.rotation[i]);
-
+      const px = pool.x[i];
+      const py = pool.y[i];
       const r = Math.round(pool.r[i] * 255);
       const g = Math.round(pool.g[i] * 255);
       const b = Math.round(pool.b[i] * 255);
 
-      // White particles: use pre-rendered sprite directly
+      // Draw velocity-based afterimage trail (additive-blend particles only)
+      const trail = pool.trail[i];
+      if (trail > 0) {
+        const speed = Math.sqrt(pool.vx[i] * pool.vx[i] + pool.vy[i] * pool.vy[i]);
+        if (speed > 80) {
+          const nx = -pool.vx[i] / speed;
+          const ny = -pool.vy[i] / speed;
+          const step = Math.min(size * 0.7, speed * 0.008);
+          for (let t = trail; t >= 1; t--) {
+            const tAlpha = alpha * (0.12 + 0.08 * (trail - t));
+            if (tAlpha < 0.01) continue;
+            const tSize = size * (0.4 + 0.2 * (trail - t));
+            const tpx = px + nx * step * t;
+            const tpy = py + ny * step * t;
+            ctx.save();
+            ctx.globalAlpha = tAlpha;
+            ctx.translate(tpx, tpy);
+            ctx.rotate(pool.rotation[i]);
+            this._drawShape(ctx, pool.shape[i], r, g, b, tSize, tAlpha);
+            ctx.restore();
+          }
+        }
+      }
+
+      // Main particle
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(px, py);
+      ctx.rotate(pool.rotation[i]);
+
       if (r === 255 && g === 255 && b === 255) {
         ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
       } else {
-        // Only update fillStyle when color actually changes
-        if (r !== lastR || g !== lastG || b !== lastB) {
-          ctx.fillStyle = `rgb(${r},${g},${b})`;
-          lastR = r; lastG = g; lastB = b;
-        }
-
-        const cx = 0, cy = 0, halfSize = size / 2;
-        switch (pool.shape[i]) {
-          case 0: // circle
-            ctx.beginPath();
-            ctx.arc(cx, cy, halfSize, 0, Math.PI * 2);
-            ctx.fill();
-            break;
-          case 1: // star
-            this._drawStar(ctx, cx, cy, 5, halfSize, halfSize * 0.45);
-            ctx.fill();
-            break;
-          case 2: // coin
-            ctx.beginPath();
-            ctx.arc(cx, cy, halfSize, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, 0)`;
-            ctx.beginPath();
-            ctx.arc(cx, cy, halfSize * 0.65, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            lastR = r; lastG = g; lastB = b;
-            ctx.fillRect(-halfSize * 0.25, -halfSize * 0.25, halfSize * 0.5, halfSize * 0.5);
-            break;
-          case 3: // rect / gold bar
-            if (r > 200 && g > 150 && b < 100) {
-              ctx.fillStyle = `rgb(${Math.max(0, r - 65)}, ${Math.max(0, g - 65)}, 0)`;
-              ctx.fillRect(-halfSize, -halfSize * 0.4, size, size * 0.6);
-              ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-              ctx.fillRect(-halfSize + 2, -halfSize * 0.4 + 2, size - 4, size * 0.6 - 4);
-              ctx.fillStyle = `rgb(${Math.min(255, r + 45)}, ${Math.min(255, g + 45)}, 120)`;
-              ctx.fillRect(-halfSize + 2, -halfSize * 0.4 + 2, size - 4, 3);
-            } else {
-              ctx.fillRect(-halfSize, -halfSize * 0.4, size, size * 0.6);
-            }
-            lastR = -1; // fillStyle was modified
-            break;
-          case 4: // ring
-            ctx.strokeStyle = `rgb(${r},${g},${b})`;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(cx, cy, halfSize, 0, Math.PI * 2);
-            ctx.stroke();
-            break;
-          case 5: // gem - 8-pointed faceted precious stone
-            ctx.beginPath();
-            ctx.moveTo(cx, -halfSize);
-            ctx.lineTo(halfSize * 0.65, -halfSize * 0.35);
-            ctx.lineTo(halfSize, cy);
-            ctx.lineTo(halfSize * 0.65, halfSize * 0.35);
-            ctx.lineTo(cx, halfSize);
-            ctx.lineTo(-halfSize * 0.65, halfSize * 0.35);
-            ctx.lineTo(-halfSize, cy);
-            ctx.lineTo(-halfSize * 0.65, -halfSize * 0.35);
-            ctx.closePath();
-            ctx.fill();
-            // White sparkle highlight on top facet
-            ctx.fillStyle = 'rgba(255,255,255,0.55)';
-            ctx.beginPath();
-            ctx.moveTo(cx, -halfSize);
-            ctx.lineTo(halfSize * 0.65, -halfSize * 0.35);
-            ctx.lineTo(cx, cy);
-            ctx.lineTo(-halfSize * 0.65, -halfSize * 0.35);
-            ctx.closePath();
-            ctx.fill();
-            // Small white sparkle dot
-            ctx.fillStyle = '#fff';
-            ctx.globalAlpha = alpha * 0.7;
-            ctx.beginPath();
-            ctx.arc(-halfSize * 0.25, -halfSize * 0.35, halfSize * 0.12, 0, Math.PI * 2);
-            ctx.fill();
-            lastR = -1; // fillStyle was modified
-            break;
-          case 6: // gemDollar - gold coin with $ symbol
-            // Outer gold coin
-            ctx.beginPath();
-            ctx.arc(cx, cy, halfSize, 0, Math.PI * 2);
-            ctx.fill();
-            // Inner darker ring
-            ctx.fillStyle = `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, 0)`;
-            ctx.beginPath();
-            ctx.arc(cx, cy, halfSize * 0.65, 0, Math.PI * 2);
-            ctx.fill();
-            // $ symbol
-            ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
-            ctx.lineWidth = Math.max(1, halfSize * 0.15);
-            ctx.lineCap = 'round';
-            const sr = halfSize * 0.4;
-            ctx.beginPath();
-            ctx.moveTo(cx + sr * 0.3, cy - sr * 0.75);
-            ctx.bezierCurveTo(cx + sr * 0.3, cy - sr, cx - sr * 0.4, cy - sr, cx - sr * 0.5, cy - sr * 0.5);
-            ctx.bezierCurveTo(cx - sr * 0.7, cy, cx + sr * 0.5, cy - sr * 0.15, cx + sr * 0.5, cy + sr * 0.25);
-            ctx.bezierCurveTo(cx + sr * 0.5, cy + sr * 0.8, cx - sr * 0.3, cy + sr, cx - sr * 0.3, cy + sr * 0.75);
-            ctx.stroke();
-            // Vertical bar through $
-            ctx.beginPath();
-            ctx.moveTo(cx, cy - sr * 1.1);
-            ctx.lineTo(cx, cy + sr * 1.1);
-            ctx.lineWidth = Math.max(0.8, halfSize * 0.08);
-            ctx.stroke();
-            lastR = -1; // fillStyle was modified
-            break;
-        }
+        this._drawShape(ctx, pool.shape[i], r, g, b, size, alpha);
       }
 
       ctx.restore();
     }
   }
-}
+
+  /**
+   * Draw a single particle shape with direct canvas calls (no pre-rendered sprite).
+   * Called with ctx already translated+rotated to particle position, draw centered at (0,0).
+   */
+  _drawShape(ctx, shapeIdx, r, g, b, size, alpha) {
+    const halfSize = size / 2;
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+
+    switch (shapeIdx) {
+      case 0: // circle
+        ctx.beginPath();
+        ctx.arc(0, 0, halfSize, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      case 1: // star
+        this._drawStar(ctx, 0, 0, 5, halfSize, halfSize * 0.45);
+        ctx.fill();
+        break;
+      case 2: // coin
+        ctx.beginPath();
+        ctx.arc(0, 0, halfSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, 0)`;
+        ctx.beginPath();
+        ctx.arc(0, 0, halfSize * 0.65, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        ctx.fillRect(-halfSize * 0.25, -halfSize * 0.25, halfSize * 0.5, halfSize * 0.5);
+        break;
+      case 3: // rect / gold bar
+        if (r > 200 && g > 150 && b < 100) {
+          ctx.fillStyle = `rgb(${Math.max(0, r - 65)}, ${Math.max(0, g - 65)}, 0)`;
+          ctx.fillRect(-halfSize, -halfSize * 0.4, size, size * 0.6);
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.fillRect(-halfSize + 2, -halfSize * 0.4 + 2, size - 4, size * 0.6 - 4);
+          ctx.fillStyle = `rgb(${Math.min(255, r + 45)}, ${Math.min(255, g + 45)}, 120)`;
+          ctx.fillRect(-halfSize + 2, -halfSize * 0.4 + 2, size - 4, 3);
+        } else {
+          ctx.fillRect(-halfSize, -halfSize * 0.4, size, size * 0.6);
+        }
+        break;
+      case 4: // ring
+        ctx.strokeStyle = `rgb(${r},${g},${b})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, halfSize, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+      case 5: // gem - 8-pointed faceted precious stone
+        ctx.beginPath();
+        ctx.moveTo(0, -halfSize);
+        ctx.lineTo(halfSize * 0.65, -halfSize * 0.35);
+        ctx.lineTo(halfSize, 0);
+        ctx.lineTo(halfSize * 0.65, halfSize * 0.35);
+        ctx.lineTo(0, halfSize);
+        ctx.lineTo(-halfSize * 0.65, halfSize * 0.35);
+        ctx.lineTo(-halfSize, 0);
+        ctx.lineTo(-halfSize * 0.65, -halfSize * 0.35);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.beginPath();
+        ctx.moveTo(0, -halfSize);
+        ctx.lineTo(halfSize * 0.65, -halfSize * 0.35);
+        ctx.lineTo(0, 0);
+        ctx.lineTo(-halfSize * 0.65, -halfSize * 0.35);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = alpha * 0.7;
+        ctx.beginPath();
+        ctx.arc(-halfSize * 0.25, -halfSize * 0.35, halfSize * 0.12, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      case 6: // gemDollar - gold coin with $ symbol
+        ctx.beginPath();
+        ctx.arc(0, 0, halfSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, 0)`;
+        ctx.beginPath();
+        ctx.arc(0, 0, halfSize * 0.65, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+        ctx.lineWidth = Math.max(1, halfSize * 0.15);
+        ctx.lineCap = 'round';
+        const sr = halfSize * 0.4;
+        ctx.beginPath();
+        ctx.moveTo(sr * 0.3, -sr * 0.75);
+        ctx.bezierCurveTo(sr * 0.3, -sr, -sr * 0.4, -sr, -sr * 0.5, -sr * 0.5);
+        ctx.bezierCurveTo(-sr * 0.7, 0, sr * 0.5, -sr * 0.15, sr * 0.5, sr * 0.25);
+        ctx.bezierCurveTo(sr * 0.5, sr * 0.8, -sr * 0.3, sr, -sr * 0.3, sr * 0.75);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, -sr * 1.1);
+        ctx.lineTo(0, sr * 1.1);
+        ctx.lineWidth = Math.max(0.8, halfSize * 0.08);
+        ctx.stroke();
+        break;
+    }
+  }

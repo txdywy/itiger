@@ -421,16 +421,19 @@ export class UIManager {
 
         case 'medium':
           this.audio.playSmallWin();
+          this._showWinText('NICE WIN!', tier);
           this.particles.goldenShower(cx, 400, 0.7);
           this.particles.diamondBurst(cx, cy, 0.6);
           this.particles.sparks(cx, cy, 0.9);
+          this.particles.colorWave(255, 200, 50, 2.0);
           this._screenFlash();
           await this._delay(2500);
           break;
 
         case 'big':
           this.audio.playBigWin();
-          this._showWinText('BIG WIN!');
+          this._showWinText('BIG WIN!', tier);
+          this._setReelGlow(true, tier);
 
           // Theme-specific premium explosions
           if (currentTheme === 'egypt' || currentTheme === 'maya') {
@@ -448,6 +451,7 @@ export class UIManager {
           this.particles.moneyRain(0.8);
           this.particles.treasureExplosion(cx, cy);
           this.particles.goldenShower(cx, 500, 1.2);
+          this.particles.colorWave(255, 180, 0, 2.2);
           this._screenShake();
           this._screenFlash();
           await this._delay(3500);
@@ -455,7 +459,8 @@ export class UIManager {
 
         case 'mega':
           this.audio.playBigWin();
-          this._showWinText('MEGA WIN!!');
+          this._showWinText('MEGA WIN!!', tier);
+          this._setReelGlow(true, tier);
 
           // Theme-specific blast + Golden coin/bar sprayer
           if (currentTheme === 'egypt' || currentTheme === 'maya') {
@@ -478,6 +483,9 @@ export class UIManager {
           this.particles.diamondBurst(cx, cy, 1.5);
           this.particles.goldSprayer(cx, cy);
           this.particles.starburst(cx, cy, 1.8);
+          this.particles.colorWave(255, 100, 0, 2.5);
+          this.particles.colorWave(255, 215, 0, 2.0);
+          this.particles.spotlightPulse(255, 200, 50, 0.5, 0.5, 2.0);
           this._screenShake();
           this._screenFlash();
           await this._delay(4500);
@@ -485,7 +493,8 @@ export class UIManager {
 
         case 'jackpot':
           this.audio.playJackpot();
-          this._showWinText('🎉 JACKPOT 🎉');
+          this._showWinText('🎉 JACKPOT 🎉', tier);
+          this._setReelGlow(true, tier);
 
           // Staged fireworks with all treasure types
           this.particles.jackpotFireworks(cx, cy);
@@ -497,12 +506,20 @@ export class UIManager {
           this.particles.lightningStrike(cx, cy);
           this.particles.fireRing(cx, cy, 220);
           this.particles.fire(cx, cy - 100, 1.8);
+          // Layered screen effects
+          this.particles.colorWave(255, 215, 0, 3.0);
+          this.particles.colorWave(255, 50, 100, 2.5);
+          this.particles.colorWave(100, 200, 255, 2.0);
+          this.particles.spotlightPulse(255, 215, 0, 0.5, 0.4, 3.0);
+          this.particles.spotlightPulse(255, 100, 200, 0.25, 0.6, 2.5);
+          this.particles.spotlightPulse(100, 200, 255, 0.75, 0.6, 2.0);
           this._screenShake();
           this._screenFlash();
           await this._delay(6000);
           break;
       }
     } finally {
+      this._setReelGlow(false);
       this._hideWinOverlay();
       this.particles.clearEmitters();
       this.clearWinCelebration();
@@ -578,15 +595,28 @@ export class UIManager {
     }, (duration + 0.6) * 1000);
   }
 
-  _showWinText(text) {
+  _showWinText(text, tier) {
     if (!this.winOverlay || !this.winText) return;
     this.winText.textContent = text;
+    // Remove previous tier classes and set new one
+    this.winText.className = 'win-text';
+    if (tier && tier !== 'small') {
+      this.winText.classList.add(`win-text--${tier}`);
+    }
     this.winOverlay.classList.add('active');
 
-    gsap.fromTo(this.winText,
-      { scale: 0, rotation: -10, opacity: 0 },
-      { scale: 1, rotation: 0, opacity: 1, duration: 0.5, ease: 'back.out(2)' }
-    );
+    // Use mega burst entrance for mega/jackpot, standard for others
+    if (tier === 'mega' || tier === 'jackpot') {
+      gsap.fromTo(this.winText,
+        { scale: 0, rotation: -20, opacity: 0 },
+        { scale: 1, rotation: 0, opacity: 1, duration: 0.6, ease: 'back.out(2.5)' }
+      );
+    } else {
+      gsap.fromTo(this.winText,
+        { scale: 0, rotation: -10, opacity: 0 },
+        { scale: 1, rotation: 0, opacity: 1, duration: 0.5, ease: 'back.out(2)' }
+      );
+    }
 
     // Pulse effect
     gsap.to(this.winText, {
@@ -629,6 +659,24 @@ export class UIManager {
     `;
     document.body.appendChild(flash);
     setTimeout(() => flash.remove(), 500);
+  }
+
+  _setReelGlow(on, tier) {
+    const container = document.querySelector('.reels-container');
+    if (!container) return;
+    if (on) {
+      const colors = {
+        big: 'rgba(255,215,0,0.3)',
+        mega: 'rgba(255,100,0,0.4)',
+        jackpot: 'rgba(255,50,150,0.5)',
+      };
+      const color = colors[tier] || colors.big;
+      container.style.boxShadow = `inset 0 0 40px ${color}, 0 0 60px ${color}`;
+      container.style.borderColor = color;
+    } else {
+      container.style.boxShadow = '';
+      container.style.borderColor = '';
+    }
   }
 
   _addToHistory(winResult) {

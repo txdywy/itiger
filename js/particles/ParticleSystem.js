@@ -14,6 +14,7 @@ export class ParticleSystem {
     this.running = false;
     this.lastTime = 0;
     this.densityMultiplier = 1; // for mobile performance scaling
+    this._screenEffects = []; // color waves, spotlights drawn on VFX canvas
 
     // FPS tracking and dynamic optimization properties
     this.fps = 60;
@@ -82,9 +83,19 @@ export class ParticleSystem {
 
     // Update particles
     this.pool.update(dt);
+
+    // Update screen effects (color waves, spotlights)
+    for (let i = this._screenEffects.length - 1; i >= 0; i--) {
+      this._screenEffects[i].elapsed += dt;
+      if (this._screenEffects[i].elapsed >= this._screenEffects[i].duration) {
+        this._screenEffects.splice(i, 1);
+      }
+    }
   }
 
   render() {
+    // Pass screen effects to renderer for canvas drawing
+    this.renderer._screenEffects = this._screenEffects;
     this.renderer.render(this.pool);
   }
 
@@ -102,10 +113,12 @@ export class ParticleSystem {
    */
   clearEmitters() {
     this.emitters = [];
+    this._screenEffects = [];
   }
 
   clearAll() {
     this.emitters = [];
+    this._screenEffects = [];
     // Release all particles
     for (let i = 0; i < this.pool.max; i++) {
       if (this.pool.life[i] > 0) {
@@ -1038,6 +1051,37 @@ export class ParticleSystem {
       shape: 6, // gemDollar
       rotSpeed: 5,
       blendMode: 'source-over',
+    });
+  }
+
+  // ======================================================
+  // CANVAS SCREEN EFFECTS
+  // ======================================================
+
+  /**
+   * Color Wave - expanding radial color gradient from screen center
+   * Rendered on VFX canvas with additive blend for a glowing wash effect
+   */
+  colorWave(r, g, b, duration = 1.8) {
+    this._screenEffects.push({
+      type: 'colorWave',
+      color: [r, g, b],
+      elapsed: 0,
+      duration,
+    });
+  }
+
+  /**
+   * Spotlight Pulse - focused radial glow at a screen position
+   * Rendered on VFX canvas with additive blend
+   */
+  spotlightPulse(r, g, b, x = 0.5, y = 0.5, duration = 1.5) {
+    this._screenEffects.push({
+      type: 'spotlightPulse',
+      color: [r, g, b],
+      x, y,
+      elapsed: 0,
+      duration,
     });
   }
 }

@@ -233,6 +233,55 @@
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
+/* Win text golden shimmer sweep */
+@keyframes winTextShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Win text multi-layer glow pulse */
+@keyframes winTextGlowPulse {
+  0%, 100% {
+    text-shadow:
+      0 0 10px rgba(255,215,0,0.6),
+      0 0 30px rgba(255,215,0,0.3);
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow:
+      0 0 15px rgba(255,215,0,0.8),
+      0 0 40px rgba(255,215,0,0.5),
+      0 0 80px rgba(255,215,0,0.2);
+    filter: brightness(1.2);
+  }
+}
+
+/* Mega/jackpot win text burst entrance */
+@keyframes winTextMegaBurst {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; letter-spacing: 0.2em; }
+  40% { transform: scale(1.35) rotate(5deg); opacity: 1; letter-spacing: 0.15em; }
+  60% { transform: scale(0.9) rotate(-2deg); letter-spacing: 0.1em; }
+  80% { transform: scale(1.1) rotate(1deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; letter-spacing: 0.08em; }
+}
+
+/* Win text color cycle for jackpot */
+@keyframes winTextRainbow {
+  0% { color: #FFD700; }
+  16% { color: #FF6B6B; }
+  33% { color: #4ECDC4; }
+  50% { color: #A78BFA; }
+  66% { color: #F472B6; }
+  83% { color: #34D399; }
+  100% { color: #FFD700; }
+}
+
+/* Win text sparkle overlay shimmer */
+@keyframes winTextSparkleOverlay {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.3; }
+}
+
 /* Slot machine idle glow breathe */
 @keyframes idleBreathe {
   0%, 100% { box-shadow: 0 0 30px var(--logo-glow, rgba(255,215,0,0.1)); }

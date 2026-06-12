@@ -26,6 +26,7 @@ export class ParticlePool {
     this.rotSpeed = new Float32Array(maxParticles);
     this.shape = new Uint8Array(maxParticles);      // 0=circle, 1=star, 2=coin, 3=rect, 4=ring, 5=gem, 6=gemDollar
     this.blendMode = new Uint8Array(maxParticles);   // 0=source-over (normal), 1=lighter (additive)
+    this.trail = new Uint8Array(maxParticles);        // trail segment count (0=none, 1-4=afterimage streak)
 
     // Free list for O(1) allocation
     this.freeList = [];
@@ -87,6 +88,15 @@ export class ParticlePool {
 
     this.shape[i] = config.shape || 0;
     this.blendMode[i] = config.blendMode === 'source-over' ? 0 : 1;
+
+    // Auto-compute trail length from speed + blendMode
+    // Only additive-blend (glow) particles get trails for performance
+    const speed = Math.sqrt(this.vx[i] * this.vx[i] + this.vy[i] * this.vy[i]);
+    if (this.blendMode[i] === 1 && speed > 150) {
+      this.trail[i] = Math.min(4, Math.floor(speed / 150));
+    } else {
+      this.trail[i] = 0;
+    }
   }
 
   /**
