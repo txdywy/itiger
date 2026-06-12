@@ -167,23 +167,28 @@ export class SlotMachine {
 
     this.spinning = true;
 
-    // Deduct bet (skip for free spins)
-    if (this.freeSpinsRemaining <= 0) {
-      this.balance -= this.getTotalBet();
-      if (this.onBalanceChange) this.onBalanceChange(this.balance, -this.getTotalBet());
-    }
-
-    // Generate random results for each reel
-    for (let r = 0; r < 5; r++) {
-      for (let row = 0; row < 3; row++) {
-        this.visibleSymbols[r][row] = this._getRandomSymbol();
+    try {
+      // Deduct bet (skip for free spins)
+      if (this.freeSpinsRemaining <= 0) {
+        this.balance -= this.getTotalBet();
+        if (this.onBalanceChange) this.onBalanceChange(this.balance, -this.getTotalBet());
       }
-    }
 
-    // Return the result data - actual win checking happens after reels stop
-    return {
-      symbols: this.visibleSymbols.map(reel => [...reel]),
-    };
+      // Generate random results for each reel
+      for (let r = 0; r < 5; r++) {
+        for (let row = 0; row < 3; row++) {
+          this.visibleSymbols[r][row] = this._getRandomSymbol();
+        }
+      }
+
+      // Return the result data - actual win checking happens after reels stop
+      return {
+        symbols: this.visibleSymbols.map(reel => [...reel]),
+      };
+    } catch (err) {
+      this.spinning = false;
+      throw err;
+    }
   }
 
   /**

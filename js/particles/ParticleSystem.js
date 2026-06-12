@@ -199,6 +199,8 @@ export class ParticleSystem {
   }
 
   /**
+   * Golden shower - gold coins raining down
+   */
   goldenShower(centerX, width, intensity = 1) {
     const count = Math.round(120 * intensity * this.densityMultiplier);
     return this.createEmitter({

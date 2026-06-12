@@ -247,56 +247,70 @@ export class UIManager {
     if (this.celebrating) return;
     if (!this.slot.canSpin()) return;
 
-    // Initialize audio on first interaction
-    this.audio.init();
-    this.audio.resume();
+    try {
+      // Initialize audio on first interaction
+      this.audio.init();
+      this.audio.resume();
 
-    // Clear previous payline rendering and win states
-    this.celebrating = false;
-    this.clearWinCelebration();
-    this._hideWinOverlay();
-    if (this.particles) this.particles.clearEmitters();
+      // Clear previous payline rendering and win states
+      this.celebrating = false;
+      this.clearWinCelebration();
+      this._hideWinOverlay();
+      if (this.particles) this.particles.clearEmitters();
 
-    // Start spin
-    this.audio.playSpinStart();
-    const spinBtn = document.getElementById('spin-btn');
-    if (spinBtn) spinBtn.classList.add('spinning');
+      // Start spin
+      this.audio.playSpinStart();
+      const spinBtn = document.getElementById('spin-btn');
+      if (spinBtn) spinBtn.classList.add('spinning');
 
-    // Generate results
-    const result = this.slot.spin();
-    if (!result) {
+      // Generate results
+      const result = this.slot.spin();
+      if (!result) {
+        if (spinBtn) spinBtn.classList.remove('spinning');
+        return;
+      }
+
+      // Animate reels passing audio and particles for anticipation cues
+      await this.reels.spin(
+        result.symbols,
+        (reelIdx) => {
+          this.audio.playReelStop();
+          this.audio.playTick();
+        },
+        () => this.audio.playTick(),
+        this.audio,
+        this.particles
+      );
+
       if (spinBtn) spinBtn.classList.remove('spinning');
-      return;
+
+      // Check wins
+      const winResult = this.slot.checkWins(result.symbols);
+
+      if (winResult.totalWin > 0) {
+        await this._celebrateWin(winResult);
+      }
+
+      // Handle free spins trigger
+      if (winResult.freeSpinsTriggered) {
+        await this._celebrateFreeSpins();
+      }
+
+      this._updateDisplay();
+      this._addToHistory(winResult);
+    } catch (err) {
+      console.error('Spin error:', err);
+      // Ensure state is never permanently stuck on error
+      this.celebrating = false;
+      this.slot.spinning = false;
+      this.reels.spinning = false;
+      this.clearWinCelebration();
+      this._hideWinOverlay();
+      if (this.particles) this.particles.clearEmitters();
+      const spinBtn = document.getElementById('spin-btn');
+      if (spinBtn) spinBtn.classList.remove('spinning');
+      this._updateDisplay();
     }
-
-    // Animate reels passing audio and particles for anticipation cues
-    await this.reels.spin(
-      result.symbols,
-      (reelIdx) => {
-        this.audio.playReelStop();
-        this.audio.playTick();
-      },
-      () => this.audio.playTick(),
-      this.audio,
-      this.particles
-    );
-
-    if (spinBtn) spinBtn.classList.remove('spinning');
-
-    // Check wins
-    const winResult = this.slot.checkWins(result.symbols);
-
-    if (winResult.totalWin > 0) {
-      await this._celebrateWin(winResult);
-    }
-
-    // Handle free spins trigger
-    if (winResult.freeSpinsTriggered) {
-      await this._celebrateFreeSpins();
-    }
-
-    this._updateDisplay();
-    this._addToHistory(winResult);
   }
 
   /**
@@ -367,136 +381,144 @@ export class UIManager {
    */
   async _celebrateWin(winResult) {
     this.celebrating = true;
-    const tier = winResult.winTier;
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
 
-    // Start cycling through individual paylines sequentially for clean clarity
-    let winLineIndex = 0;
-    const cycleWinLines = () => {
-      if (!this.celebrating || winResult.wins.length === 0) return;
+    try {
+      const tier = winResult.winTier;
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
 
-      const currentWin = winResult.wins[winLineIndex];
-      if (currentWin && currentWin.positions) {
-        this.reels.clearHighlights();
-        this.reels.highlightWins(currentWin.positions);
-        this._drawPaylinePath(currentWin);
+      // Start cycling through individual paylines sequentially for clean clarity
+      let winLineIndex = 0;
+      const cycleWinLines = () => {
+        if (!this.celebrating || winResult.wins.length === 0) return;
+
+        const currentWin = winResult.wins[winLineIndex];
+        if (currentWin && currentWin.positions) {
+          this.reels.clearHighlights();
+          this.reels.highlightWins(currentWin.positions);
+          this._drawPaylinePath(currentWin);
+        }
+
+        winLineIndex = (winLineIndex + 1) % winResult.wins.length;
+        this.winCycleTimeout = setTimeout(cycleWinLines, 1400);
+      };
+
+      // Trigger odometer count-up
+      this._showWinAmount(winResult.totalWin, tier);
+
+      // Initial cycle trigger
+      cycleWinLines();
+
+      const currentTheme = this.themes.currentTheme;
+
+      switch (tier) {
+        case 'small':
+          this.audio.playSmallWin();
+          this.particles.sparks(cx, cy, 0.6);
+          await this._delay(1500);
+          break;
+
+        case 'medium':
+          this.audio.playSmallWin();
+          this.particles.goldenShower(cx, 400, 0.7);
+          this.particles.sparks(cx, cy, 0.9);
+          this._screenFlash();
+          await this._delay(2500);
+          break;
+
+        case 'big':
+          this.audio.playBigWin();
+          this._showWinText('BIG WIN!');
+
+          // Theme-specific premium explosions
+          if (currentTheme === 'egypt' || currentTheme === 'maya') {
+            this.particles.fireBlast(cx, cy);
+          } else if (currentTheme === 'underwater') {
+            this.particles.frostStorm(cx, cy);
+          } else if (currentTheme === 'space') {
+            this.particles.electricStorm(cx, cy);
+            this.particles.lightningStrike(cx, cy);
+          } else {
+            this.particles.explosion(cx, cy, 1.4);
+            this.particles.colorShockwave(cx, cy);
+          }
+
+          this.particles.goldenShower(cx, 500, 1.2);
+          this.particles.coinRain(1.0);
+          this._screenShake();
+          this._screenFlash();
+          await this._delay(3500);
+          break;
+
+        case 'mega':
+          this.audio.playBigWin();
+          this._showWinText('MEGA WIN!!');
+
+          // Theme-specific blast + Golden coin/bar sprayer
+          if (currentTheme === 'egypt' || currentTheme === 'maya') {
+            this.particles.fireBlast(cx, cy);
+            this.particles.colorShockwave(cx, cy);
+          } else if (currentTheme === 'underwater') {
+            this.particles.frostStorm(cx, cy);
+            this.particles.colorShockwave(cx, cy);
+          } else if (currentTheme === 'space') {
+            this.particles.electricStorm(cx, cy);
+            this.particles.lightningStrike(cx, cy);
+          } else {
+            this.particles.explosion(cx, cy, 2.2);
+            this.particles.colorShockwave(cx, cy);
+            this.particles.lightningStrike(cx, cy);
+          }
+
+          this.particles.goldSprayer(cx, cy);
+          this.particles.starburst(cx, cy, 1.8);
+          this._screenShake();
+          this._screenFlash();
+          await this._delay(4500);
+          break;
+
+        case 'jackpot':
+          this.audio.playJackpot();
+          this._showWinText('🎉 JACKPOT 🎉');
+
+          // Ultimate combo
+          this.particles.fireBlast(cx, cy);
+          this.particles.frostStorm(cx, cy);
+          this.particles.electricStorm(cx, cy);
+          this.particles.goldSprayer(cx, cy);
+          this.particles.lightningStrike(cx, cy);
+          this.particles.colorShockwave(cx, cy);
+
+          this.particles.starburst(cx, cy, 2.2);
+          this.particles.fireRing(cx, cy, 220);
+          this.particles.fire(cx, cy - 100, 1.8);
+          this._screenShake();
+          this._screenFlash();
+          await this._delay(6000);
+          break;
       }
-
-      winLineIndex = (winLineIndex + 1) % winResult.wins.length;
-      this.winCycleTimeout = setTimeout(cycleWinLines, 1400);
-    };
-
-    // Trigger odometer count-up
-    this._showWinAmount(winResult.totalWin, tier);
-
-    // Initial cycle trigger
-    cycleWinLines();
-
-    const currentTheme = this.themes.currentTheme;
-
-    switch (tier) {
-      case 'small':
-        this.audio.playSmallWin();
-        this.particles.sparks(cx, cy, 0.6);
-        await this._delay(1500);
-        break;
-
-      case 'medium':
-        this.audio.playSmallWin();
-        this.particles.goldenShower(cx, 400, 0.7);
-        this.particles.sparks(cx, cy, 0.9);
-        this._screenFlash();
-        await this._delay(2500);
-        break;
-
-      case 'big':
-        this.audio.playBigWin();
-        this._showWinText('BIG WIN!');
-        
-        // Theme-specific premium explosions
-        if (currentTheme === 'egypt' || currentTheme === 'maya') {
-          this.particles.fireBlast(cx, cy);
-        } else if (currentTheme === 'underwater') {
-          this.particles.frostStorm(cx, cy);
-        } else if (currentTheme === 'space') {
-          this.particles.electricStorm(cx, cy);
-          this.particles.lightningStrike(cx, cy);
-        } else {
-          this.particles.explosion(cx, cy, 1.4);
-          this.particles.colorShockwave(cx, cy);
-        }
-        
-        this.particles.goldenShower(cx, 500, 1.2);
-        this.particles.coinRain(1.0);
-        this._screenShake();
-        this._screenFlash();
-        await this._delay(3500);
-        break;
- 
-      case 'mega':
-        this.audio.playBigWin();
-        this._showWinText('MEGA WIN!!');
-        
-        // Theme-specific blast + Golden coin/bar sprayer
-        if (currentTheme === 'egypt' || currentTheme === 'maya') {
-          this.particles.fireBlast(cx, cy);
-          this.particles.colorShockwave(cx, cy);
-        } else if (currentTheme === 'underwater') {
-          this.particles.frostStorm(cx, cy);
-          this.particles.colorShockwave(cx, cy);
-        } else if (currentTheme === 'space') {
-          this.particles.electricStorm(cx, cy);
-          this.particles.lightningStrike(cx, cy);
-        } else {
-          this.particles.explosion(cx, cy, 2.2);
-          this.particles.colorShockwave(cx, cy);
-          this.particles.lightningStrike(cx, cy);
-        }
-        
-        this.particles.goldSprayer(cx, cy);
-        this.particles.starburst(cx, cy, 1.8);
-        this._screenShake();
-        this._screenFlash();
-        await this._delay(4500);
-        break;
- 
-      case 'jackpot':
-        this.audio.playJackpot();
-        this._showWinText('🎉 JACKPOT 🎉');
-        
-        // Ultimate combo
-        this.particles.fireBlast(cx, cy);
-        this.particles.frostStorm(cx, cy);
-        this.particles.electricStorm(cx, cy);
-        this.particles.goldSprayer(cx, cy);
-        this.particles.lightningStrike(cx, cy);
-        this.particles.colorShockwave(cx, cy);
-        
-        this.particles.starburst(cx, cy, 2.2);
-        this.particles.fireRing(cx, cy, 220);
-        this.particles.fire(cx, cy - 100, 1.8);
-        this._screenShake();
-        this._screenFlash();
-        await this._delay(6000);
-        break;
+    } finally {
+      this._hideWinOverlay();
+      this.particles.clearEmitters();
+      this.clearWinCelebration();
+      this.celebrating = false;
     }
-
-    this._hideWinOverlay();
-    this.particles.clearEmitters();
-    this.clearWinCelebration();
-    this.celebrating = false;
   }
 
   async _celebrateFreeSpins() {
-    this.audio.playFreeSpins();
-    this._showWinText('FREE SPINS!');
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
-    this.particles.mysticGlow(cx, cy, { r: 0.5, g: 0, b: 1 });
-    this.particles.starburst(cx, cy, 1);
-    await this._delay(2000);
-    this._hideWinOverlay();
+    this.celebrating = true;
+    try {
+      this.audio.playFreeSpins();
+      this._showWinText('FREE SPINS!');
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      this.particles.mysticGlow(cx, cy, { r: 0.5, g: 0, b: 1 });
+      this.particles.starburst(cx, cy, 1);
+      await this._delay(2000);
+      this._hideWinOverlay();
+    } finally {
+      this.celebrating = false;
+    }
   }
 
   _showWinAmount(amount, tier) {
