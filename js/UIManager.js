@@ -421,8 +421,10 @@ export class UIManager {
           this.particles.frostStorm(cx, cy);
         } else if (currentTheme === 'space') {
           this.particles.electricStorm(cx, cy);
+          this.particles.lightningStrike(cx, cy);
         } else {
           this.particles.explosion(cx, cy, 1.4);
+          this.particles.colorShockwave(cx, cy);
         }
         
         this.particles.goldenShower(cx, 500, 1.2);
@@ -431,7 +433,7 @@ export class UIManager {
         this._screenFlash();
         await this._delay(3500);
         break;
-
+ 
       case 'mega':
         this.audio.playBigWin();
         this._showWinText('MEGA WIN!!');
@@ -439,12 +441,17 @@ export class UIManager {
         // Theme-specific blast + Golden coin/bar sprayer
         if (currentTheme === 'egypt' || currentTheme === 'maya') {
           this.particles.fireBlast(cx, cy);
+          this.particles.colorShockwave(cx, cy);
         } else if (currentTheme === 'underwater') {
           this.particles.frostStorm(cx, cy);
+          this.particles.colorShockwave(cx, cy);
         } else if (currentTheme === 'space') {
           this.particles.electricStorm(cx, cy);
+          this.particles.lightningStrike(cx, cy);
         } else {
           this.particles.explosion(cx, cy, 2.2);
+          this.particles.colorShockwave(cx, cy);
+          this.particles.lightningStrike(cx, cy);
         }
         
         this.particles.goldSprayer(cx, cy);
@@ -453,7 +460,7 @@ export class UIManager {
         this._screenFlash();
         await this._delay(4500);
         break;
-
+ 
       case 'jackpot':
         this.audio.playJackpot();
         this._showWinText('🎉 JACKPOT 🎉');
@@ -463,6 +470,8 @@ export class UIManager {
         this.particles.frostStorm(cx, cy);
         this.particles.electricStorm(cx, cy);
         this.particles.goldSprayer(cx, cy);
+        this.particles.lightningStrike(cx, cy);
+        this.particles.colorShockwave(cx, cy);
         
         this.particles.starburst(cx, cy, 2.2);
         this.particles.fireRing(cx, cy, 220);

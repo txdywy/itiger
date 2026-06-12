@@ -512,4 +512,74 @@ export class ParticleSystem {
       blendMode: 'source-over',
     });
   }
+
+  /**
+   * Lightning Strike - shockwave sparks dropping from sky
+   */
+  lightningStrike(x, y) {
+    const count = Math.round(150 * this.densityMultiplier);
+    // Main vertical strike flash
+    this.createEmitter({
+      x,
+      y: 0,
+      burstCount: 40,
+      angle: Math.PI / 2,
+      spread: 0.05,
+      speed: 1000,
+      lifetime: 0.3,
+      gravity: 0,
+      sizeStart: 15,
+      sizeEnd: 1,
+      colorFrom: { r: 0.9, g: 0.95, b: 1 },
+      colorTo: { r: 0.5, g: 0, b: 1 },
+      alpha: 1.0,
+      shape: 0,
+    });
+    // Ground shock blast
+    this.createEmitter({
+      x,
+      y,
+      burstCount: count,
+      angle: -Math.PI / 2,
+      spread: Math.PI * 1.5,
+      speed: 450,
+      speedVariance: 0.5,
+      lifetime: 0.8,
+      gravity: 0.1,
+      sizeStart: 8,
+      sizeEnd: 0,
+      colorFrom: { r: 1, g: 1, b: 1 },
+      colorTo: { r: 0, g: 0.8, b: 1 }, // electric cyan
+      alpha: 1.0,
+      shape: 4, // ring
+      rotSpeed: 10,
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Color Shockwave - expanding multi-colored circle rings
+   */
+  colorShockwave(x, y, radius = 50) {
+    const count = Math.round(90 * this.densityMultiplier);
+    // Expand concentric ring sparks
+    this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 350,
+      speedVariance: 0.2,
+      lifetime: 1.2,
+      gravity: 0,
+      sizeStart: 10,
+      sizeEnd: 0,
+      colorFrom: { r: 1, g: 0, b: 0.5 }, // Magenta
+      colorTo: { r: 0, g: 1, b: 1 },    // Cyan
+      alpha: 0.8,
+      shape: 4, // ring
+      rotSpeed: 12,
+      blendMode: 'lighter',
+    });
+  }
 }
