@@ -10,6 +10,20 @@ export class SymbolRenderer {
    * @returns {string} SVG HTML string
    */
   static render(themeId, index) {
+    if (themeId === 'las-vegas') {
+      const names = ['cherry', 'bell', 'clover', 'bar', 'seven', 'diamond', 'crown', 'star'];
+      const name = names[index] || names[0];
+      return `<img src="assets/images/las-vegas/${name}.png" class="symbol-img" alt="${name}">`;
+    }
+    if (themeId === 'egypt') {
+      const names = ['ankh', 'scarab', 'eye', 'pharaoh', 'urn', 'cobra', 'wild', 'scatter'];
+      const name = names[index] || names[0];
+      return `<img src="assets/images/egypt/${name}.png" class="symbol-img" alt="${name}">`;
+    }
+    if (themeId === 'maya' && index === 0) {
+      // Maya mask is generated and ready
+      return `<img src="assets/images/maya/mask.png" class="symbol-img" alt="mask">`;
+    }
     const renderFunc = this._rendererMap[themeId]?.[index] || this._rendererMap['las-vegas'][0];
     return renderFunc();
   }

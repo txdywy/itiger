@@ -111,6 +111,8 @@ export class ReelManager {
     // Stop tick sound
     if (this.tickInterval) clearInterval(this.tickInterval);
 
+    const themeId = this.themeManager.currentTheme;
+
     // Phase 1: Start infinite spin loops for ALL reels simultaneously
     this.reels.forEach((reel, reelIdx) => {
       reel.element.classList.add('reel-spinning');
