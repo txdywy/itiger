@@ -251,8 +251,11 @@ export class UIManager {
     this.audio.init();
     this.audio.resume();
 
-    // Clear previous payline rendering
+    // Clear previous payline rendering and win states
+    this.celebrating = false;
     this.clearWinCelebration();
+    this._hideWinOverlay();
+    if (this.particles) this.particles.clearEmitters();
 
     // Start spin
     this.audio.playSpinStart();
