@@ -24,7 +24,8 @@ export class ParticlePool {
     this.gravity = new Float32Array(maxParticles);  // per-particle gravity multiplier
     this.rotation = new Float32Array(maxParticles);
     this.rotSpeed = new Float32Array(maxParticles);
-    this.shape = new Uint8Array(maxParticles);      // 0=circle, 1=star, 2=diamond, 3=rect
+    this.shape = new Uint8Array(maxParticles);      // 0=circle, 1=star, 2=coin, 3=rect, 4=ring, 5=gem, 6=gemDollar
+    this.blendMode = new Uint8Array(maxParticles);   // 0=source-over (normal), 1=lighter (additive)
 
     // Free list for O(1) allocation
     this.freeList = [];
@@ -85,6 +86,7 @@ export class ParticlePool {
     this.rotSpeed[i] = (Math.random() - 0.5) * (config.rotSpeed || 0);
 
     this.shape[i] = config.shape || 0;
+    this.blendMode[i] = config.blendMode === 'source-over' ? 0 : 1;
   }
 
   /**
@@ -112,13 +114,14 @@ export class ParticlePool {
       // Apply gravity (standardized at 400 px/s²)
       this.vy[i] += 400 * this.gravity[i] * dt;
 
-      // Bounce physics off bottom window border for coins (shape 2)
+      // Bounce physics off bottom window border for coins, gems, and dollar coins
       const floor = window.innerHeight - 15;
-      if (this.shape[i] === 2 && this.y[i] > floor && this.vy[i] > 0) {
+      const shape = this.shape[i];
+      if ((shape === 2 || shape === 5 || shape === 6) && this.y[i] > floor && this.vy[i] > 0) {
         this.y[i] = floor;
-        this.vy[i] = -this.vy[i] * 0.45; // Dampened bounce
-        this.vx[i] *= 0.75; // Friction
-        this.rotSpeed[i] = (Math.random() - 0.5) * 12; // Spinning boost
+        this.vy[i] = -this.vy[i] * (shape === 5 ? 0.6 : 0.45); // Gems bounce higher
+        this.vx[i] *= 0.75;
+        this.rotSpeed[i] = (Math.random() - 0.5) * 12;
       }
 
       // Update size (lerp from start to end based on life)

@@ -134,6 +134,28 @@ class App {
             0.15
           );
           break;
+        case 'diamondSparkle':
+          this.particleSystem.diamondSparkle(
+            Math.random() * window.innerWidth,
+            Math.random() * window.innerHeight,
+            0.3
+          );
+          break;
+        case 'floatingGems':
+          this.particleSystem.floatingGems(
+            Math.random() * window.innerWidth,
+            window.innerHeight * (0.5 + Math.random() * 0.5)
+          );
+          break;
+        case 'diamondDrizzle':
+          this.particleSystem.diamondDrizzle(0.25);
+          break;
+        case 'moneyFloat':
+          this.particleSystem.moneyFloat(
+            Math.random() * window.innerWidth,
+            window.innerHeight * (0.4 + Math.random() * 0.4)
+          );
+          break;
       }
     };
 

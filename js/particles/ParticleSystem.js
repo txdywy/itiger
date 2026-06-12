@@ -8,7 +8,7 @@ import { ParticleRenderer } from './ParticleRenderer.js';
 
 export class ParticleSystem {
   constructor(canvas) {
-    this.pool = new ParticlePool(8000);
+    this.pool = new ParticlePool(12000);
     this.renderer = new ParticleRenderer(canvas);
     this.emitters = [];
     this.running = false;
@@ -582,6 +582,462 @@ export class ParticleSystem {
       shape: 4, // ring
       rotSpeed: 12,
       blendMode: 'lighter',
+    });
+  }
+
+  // ======================================================
+  // NEW DAZZLING EFFECTS - Gems, Money, Treasure
+  // ======================================================
+
+  /**
+   * Diamond Burst - sparkling gem explosion
+   */
+  diamondBurst(x, y, intensity = 1) {
+    const count = Math.round(80 * intensity * this.densityMultiplier);
+    // Diamond gems
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(count * 0.6),
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 280 * intensity,
+      speedVariance: 0.6,
+      lifetime: 2.0,
+      gravity: 0.3,
+      sizeStart: 16,
+      sizeEnd: 6,
+      colorFrom: { r: 0.6, g: 0.95, b: 1 },    // ice blue
+      colorTo: { r: 0.9, g: 0.9, b: 1 },         // white
+      alpha: 0.95,
+      shape: 5, // gem
+      rotSpeed: 10,
+      blendMode: 'source-over',
+    });
+    // Sparkle accents
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(count * 0.4),
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 350,
+      speedVariance: 0.7,
+      lifetime: 0.8,
+      gravity: -0.1,
+      sizeStart: 5,
+      sizeEnd: 0,
+      colorFrom: { r: 1, g: 1, b: 1 },
+      colorTo: { r: 0.7, g: 0.9, b: 1 },
+      alpha: 1.0,
+      shape: 1, // star sparkles
+      rotSpeed: 15,
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Money Rain - dollar coins and regular coins raining down
+   */
+  moneyRain(intensity = 1) {
+    const w = window.innerWidth;
+    const baseRate = Math.round(60 * intensity * this.densityMultiplier);
+
+    // Dollar coins from left
+    this.createEmitter({
+      x: w * 0.25,
+      y: -30,
+      rate: baseRate,
+      duration: 3.5,
+      angle: Math.PI * 0.55,
+      spread: Math.PI * 0.3,
+      speed: 220,
+      speedVariance: 0.4,
+      lifetime: 3.5,
+      gravity: 0.35,
+      sizeStart: 24,
+      sizeEnd: 18,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 1, g: 1, b: 0.8 },
+      alpha: 1.0,
+      shape: 6, // gemDollar
+      rotSpeed: 8,
+      blendMode: 'source-over',
+    });
+
+    // Regular coins from right
+    this.createEmitter({
+      x: w * 0.75,
+      y: -30,
+      rate: baseRate,
+      duration: 3.5,
+      angle: Math.PI * 0.45,
+      spread: Math.PI * 0.3,
+      speed: 220,
+      speedVariance: 0.4,
+      lifetime: 3.5,
+      gravity: 0.35,
+      sizeStart: 24,
+      sizeEnd: 18,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 0.8, g: 0.6, b: 0 },
+      alpha: 1.0,
+      shape: 2, // coin
+      rotSpeed: 8,
+      blendMode: 'source-over',
+    });
+
+    // Center gold bar shower
+    this.createEmitter({
+      x: w * 0.5,
+      y: -30,
+      rate: Math.round(baseRate * 0.3),
+      duration: 3,
+      angle: Math.PI / 2,
+      spread: Math.PI * 0.4,
+      speed: 180,
+      speedVariance: 0.3,
+      lifetime: 3.5,
+      gravity: 0.45,
+      sizeStart: 28,
+      sizeEnd: 22,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 1, g: 0.5, b: 0 },
+      alpha: 1.0,
+      shape: 3, // gold bar
+      rotSpeed: 5,
+      blendMode: 'source-over',
+    });
+  }
+
+  /**
+   * Treasure Explosion - all valuables bursting out (coins, gems, gold bars, dollar coins)
+   */
+  treasureExplosion(x, y) {
+    const dm = this.densityMultiplier;
+
+    // Gold coins burst
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(80 * dm),
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 350,
+      speedVariance: 0.7,
+      lifetime: 3.0,
+      gravity: 0.5,
+      sizeStart: 22,
+      sizeEnd: 16,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 1, g: 1, b: 0.8 },
+      alpha: 1.0,
+      shape: 2, // coin
+      rotSpeed: 10,
+      blendMode: 'source-over',
+    });
+
+    // Diamond gems burst
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(50 * dm),
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 300,
+      speedVariance: 0.6,
+      lifetime: 2.5,
+      gravity: 0.4,
+      sizeStart: 18,
+      sizeEnd: 8,
+      colorFrom: { r: 0.6, g: 0.95, b: 1 },
+      colorTo: { r: 0.9, g: 0.9, b: 1 },
+      alpha: 0.95,
+      shape: 5, // gem
+      rotSpeed: 12,
+      blendMode: 'source-over',
+    });
+
+    // Dollar coins burst
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(40 * dm),
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 320,
+      speedVariance: 0.65,
+      lifetime: 3.0,
+      gravity: 0.45,
+      sizeStart: 22,
+      sizeEnd: 16,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 0.8, g: 0.65, b: 0 },
+      alpha: 1.0,
+      shape: 6, // gemDollar
+      rotSpeed: 8,
+      blendMode: 'source-over',
+    });
+
+    // Gold bars burst
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(30 * dm),
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 250,
+      speedVariance: 0.5,
+      lifetime: 3.5,
+      gravity: 0.6,
+      sizeStart: 30,
+      sizeEnd: 24,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 1, g: 0.5, b: 0 },
+      alpha: 1.0,
+      shape: 3, // gold bar
+      rotSpeed: 6,
+      blendMode: 'source-over',
+    });
+
+    // Sparkle ring
+    this.colorShockwave(x, y);
+  }
+
+  /**
+   * Gold Bar Cascade - gold bars streaming down the screen
+   */
+  goldBarCascade(centerX, width) {
+    const dm = this.densityMultiplier;
+    const w = width || window.innerWidth * 0.6;
+    const count = Math.round(50 * dm);
+
+    this.createEmitter({
+      x: centerX,
+      y: -30,
+      rate: count,
+      duration: 3.5,
+      angle: Math.PI / 2,
+      spread: Math.PI * 0.5,
+      speed: 180,
+      speedVariance: 0.4,
+      lifetime: 4,
+      gravity: 0.4,
+      sizeStart: 28,
+      sizeEnd: 22,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 1, g: 0.5, b: 0 },
+      alpha: 1.0,
+      shape: 3, // rect (gold bar)
+      rotSpeed: 5,
+      blendMode: 'source-over',
+    });
+  }
+
+  /**
+   * Diamond Sparkle - subtle twinkling gems (ambient)
+   */
+  diamondSparkle(x, y, intensity = 1) {
+    const count = Math.round(25 * intensity * this.densityMultiplier);
+    // Gem particles
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(count * 0.5),
+      angle: -Math.PI / 2,
+      spread: Math.PI * 0.8,
+      speed: 80,
+      speedVariance: 0.5,
+      lifetime: 1.8,
+      gravity: 0.15,
+      sizeStart: 10,
+      sizeEnd: 3,
+      colorFrom: { r: 0.6, g: 0.95, b: 1 },
+      colorTo: { r: 0.9, g: 0.85, b: 1 },
+      alpha: 0.8,
+      shape: 5, // gem
+      rotSpeed: 6,
+      blendMode: 'source-over',
+    });
+    // Star sparkles
+    this.createEmitter({
+      x, y,
+      burstCount: Math.round(count * 0.5),
+      angle: -Math.PI / 2,
+      spread: Math.PI,
+      speed: 100,
+      speedVariance: 0.6,
+      lifetime: 1.0,
+      gravity: -0.05,
+      sizeStart: 4,
+      sizeEnd: 0,
+      colorFrom: { r: 1, g: 1, b: 1 },
+      colorTo: { r: 0.7, g: 0.9, b: 1 },
+      alpha: 1.0,
+      shape: 1, // star
+      rotSpeed: 12,
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Coin Tornado - swirling vortex of coins rising from center
+   */
+  coinTornado(cx, cy) {
+    const dm = this.densityMultiplier;
+    const w = window.innerWidth;
+    // Multiple vertical streams from bottom sweeping inward
+    const streams = 8;
+    for (let s = 0; s < streams; s++) {
+      const xOff = (s - streams / 2) * (w * 0.08);
+      this.createEmitter({
+        x: cx + xOff,
+        y: window.innerHeight + 20,
+        rate: Math.round(12 * dm),
+        duration: 3.5,
+        angle: -Math.PI / 2 + (xOff > 0 ? -0.3 : 0.3),
+        spread: Math.PI * 0.2,
+        speed: 420,
+        speedVariance: 0.4,
+        lifetime: 2.5,
+        gravity: -0.15,
+        sizeStart: 20,
+        sizeEnd: 12,
+        colorFrom: { r: 1, g: 0.84, b: 0 },
+        colorTo: { r: 1, g: 0.65, b: 0 },
+        alpha: 1.0,
+        shape: 2, // coin
+        rotSpeed: 14,
+        blendMode: 'source-over',
+      });
+    }
+    // Dollar coins spiraling
+    this.createEmitter({
+      x: cx,
+      y: cy + 100,
+      rate: Math.round(20 * dm),
+      duration: 3,
+      angle: -Math.PI / 2,
+      spread: Math.PI * 0.6,
+      speed: 300,
+      speedVariance: 0.5,
+      lifetime: 2.2,
+      gravity: -0.2,
+      sizeStart: 22,
+      sizeEnd: 14,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 0.8, g: 0.65, b: 0 },
+      alpha: 1.0,
+      shape: 6, // gemDollar
+      rotSpeed: 12,
+      blendMode: 'source-over',
+    });
+  }
+
+  /**
+   * Jackpot Fireworks - staged firework bursts with treasure payloads
+   */
+  jackpotFireworks(cx, cy) {
+    const dm = this.densityMultiplier;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    // Wave 1: Initial massive treasure explosion at center
+    this.treasureExplosion(cx, cy);
+
+    // Wave 2: Staggered side bursts (delayed via emitter duration trick)
+    setTimeout(() => {
+      // Left burst - gems
+      this.diamondBurst(w * 0.2, h * 0.4, 1.5);
+      // Right burst - coins
+      this.explosion(w * 0.8, h * 0.4, 1.8);
+    }, 600);
+
+    // Wave 3: Top rain of all treasures
+    setTimeout(() => {
+      this.moneyRain(1.5);
+      this.goldBarCascade(cx);
+      // Center color shockwave
+      this.colorShockwave(cx, cy, 100);
+    }, 1200);
+
+    // Wave 4: Final massive starburst ring
+    setTimeout(() => {
+      this.starburst(cx, cy, 2.5);
+      // Additional side sparkles
+      this.diamondSparkle(w * 0.15, h * 0.3, 1.5);
+      this.diamondSparkle(w * 0.85, h * 0.3, 1.5);
+    }, 2000);
+  }
+
+  /**
+   * Floating Gems - ambient gem particles rising gently
+   */
+  floatingGems(x, y) {
+    const count = Math.round(15 * this.densityMultiplier);
+    this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: -Math.PI / 2,
+      spread: Math.PI * 0.6,
+      speed: 40,
+      speedVariance: 0.5,
+      lifetime: 3.0,
+      gravity: -0.1,
+      sizeStart: 10,
+      sizeEnd: 4,
+      colorFrom: { r: 0.6, g: 0.95, b: 1 },
+      colorTo: { r: 0.4, g: 0.7, b: 1 },
+      alpha: 0.6,
+      shape: 5, // gem
+      rotSpeed: 4,
+      blendMode: 'source-over',
+    });
+  }
+
+  /**
+   * Diamond Drizzle - light shower of small gems
+   */
+  diamondDrizzle(intensity = 0.5) {
+    const w = window.innerWidth;
+    const count = Math.round(30 * intensity * this.densityMultiplier);
+    this.createEmitter({
+      x: w / 2,
+      y: -20,
+      rate: count,
+      duration: 4,
+      angle: Math.PI * 0.55,
+      spread: Math.PI * 0.4,
+      speed: 120,
+      speedVariance: 0.3,
+      lifetime: 4,
+      gravity: 0.15,
+      sizeStart: 10,
+      sizeEnd: 5,
+      colorFrom: { r: 0.7, g: 0.95, b: 1 },
+      colorTo: { r: 0.5, g: 0.8, b: 1 },
+      alpha: 0.7,
+      shape: 5, // gem
+      rotSpeed: 6,
+      blendMode: 'source-over',
+    });
+  }
+
+  /**
+   * Money Float - ambient dollar coins drifting
+   */
+  moneyFloat(x, y) {
+    const count = Math.round(12 * this.densityMultiplier);
+    this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: -Math.PI / 2,
+      spread: Math.PI * 0.5,
+      speed: 60,
+      speedVariance: 0.4,
+      lifetime: 3.0,
+      gravity: 0.05,
+      sizeStart: 18,
+      sizeEnd: 10,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 0.8, g: 0.65, b: 0 },
+      alpha: 0.7,
+      shape: 6, // gemDollar
+      rotSpeed: 5,
+      blendMode: 'source-over',
     });
   }
 }

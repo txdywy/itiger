@@ -8,7 +8,7 @@ export const THEMES = {
     symbols: ['🎰', '💎', '7️⃣', '🍒', '🔔', '💰', '🃏', '⭐'],
     wild: '🃏',
     scatter: '⭐',
-    particleEffects: ['confetti', 'goldenShower', 'explosion'],
+    particleEffects: ['confetti', 'goldenShower', 'explosion', 'diamondSparkle', 'moneyFloat'],
     bgAnimation: 'neonPulse',
   },
   'egypt': {
@@ -17,7 +17,7 @@ export const THEMES = {
     symbols: ['☥', '🐍', '👁️', '🗿', '💎', '🏺', '🦅', '☀️'],
     wild: '🦅',
     scatter: '☀️',
-    particleEffects: ['fire', 'sparks'],
+    particleEffects: ['fire', 'sparks', 'diamondSparkle'],
     bgAnimation: 'heatShimmer',
   },
   'maya': {
@@ -26,7 +26,7 @@ export const THEMES = {
     symbols: ['🏛️', '🐆', '🌀', '💎', '🪶', '🗿', '🦅', '☀️'],
     wild: '🦅',
     scatter: '☀️',
-    particleEffects: ['sparks', 'mysticGlow'],
+    particleEffects: ['sparks', 'mysticGlow', 'floatingGems'],
     bgAnimation: 'torchFlicker',
   },
   'underwater': {
@@ -35,7 +35,7 @@ export const THEMES = {
     symbols: ['🐙', '🐚', '🐠', '💎', '🔱', '🦈', '🌊', '⭐'],
     wild: '🌊',
     scatter: '⭐',
-    particleEffects: ['blizzard', 'mysticGlow'],
+    particleEffects: ['blizzard', 'mysticGlow', 'diamondDrizzle'],
     bgAnimation: 'heatShimmer',
   },
   'space': {
@@ -44,7 +44,7 @@ export const THEMES = {
     symbols: ['🚀', '🪐', '🌟', '💎', '👾', '🛸', '🌌', '⭐'],
     wild: '🛸',
     scatter: '⭐',
-    particleEffects: ['starburst', 'blizzard'],
+    particleEffects: ['starburst', 'blizzard', 'floatingGems'],
     bgAnimation: 'starTwinkle',
   },
 };

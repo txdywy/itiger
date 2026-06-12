@@ -415,12 +415,14 @@ export class UIManager {
         case 'small':
           this.audio.playSmallWin();
           this.particles.sparks(cx, cy, 0.6);
+          this.particles.diamondSparkle(cx, cy, 0.5);
           await this._delay(1500);
           break;
 
         case 'medium':
           this.audio.playSmallWin();
           this.particles.goldenShower(cx, 400, 0.7);
+          this.particles.diamondBurst(cx, cy, 0.6);
           this.particles.sparks(cx, cy, 0.9);
           this._screenFlash();
           await this._delay(2500);
@@ -443,8 +445,9 @@ export class UIManager {
             this.particles.colorShockwave(cx, cy);
           }
 
+          this.particles.moneyRain(0.8);
+          this.particles.treasureExplosion(cx, cy);
           this.particles.goldenShower(cx, 500, 1.2);
-          this.particles.coinRain(1.0);
           this._screenShake();
           this._screenFlash();
           await this._delay(3500);
@@ -470,6 +473,9 @@ export class UIManager {
             this.particles.lightningStrike(cx, cy);
           }
 
+          this.particles.coinTornado(cx, cy);
+          this.particles.goldBarCascade(cx);
+          this.particles.diamondBurst(cx, cy, 1.5);
           this.particles.goldSprayer(cx, cy);
           this.particles.starburst(cx, cy, 1.8);
           this._screenShake();
@@ -481,15 +487,14 @@ export class UIManager {
           this.audio.playJackpot();
           this._showWinText('🎉 JACKPOT 🎉');
 
-          // Ultimate combo
+          // Staged fireworks with all treasure types
+          this.particles.jackpotFireworks(cx, cy);
+          // Theme-specific overlays
           this.particles.fireBlast(cx, cy);
           this.particles.frostStorm(cx, cy);
           this.particles.electricStorm(cx, cy);
           this.particles.goldSprayer(cx, cy);
           this.particles.lightningStrike(cx, cy);
-          this.particles.colorShockwave(cx, cy);
-
-          this.particles.starburst(cx, cy, 2.2);
           this.particles.fireRing(cx, cy, 220);
           this.particles.fire(cx, cy - 100, 1.8);
           this._screenShake();

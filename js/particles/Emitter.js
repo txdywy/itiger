@@ -64,6 +64,7 @@ export class Emitter {
         alpha: this.alpha,
         shape: this.shape,
         rotSpeed: this.rotSpeed,
+        blendMode: this.blendMode,
       });
     }
   }
@@ -104,6 +105,7 @@ export class Emitter {
           alpha: this.alpha,
           shape: this.shape,
           rotSpeed: this.rotSpeed,
+          blendMode: this.blendMode,
         });
       }
     }
