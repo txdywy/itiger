@@ -20,9 +20,24 @@ export class SymbolRenderer {
       const name = names[index] || names[0];
       return `<img src="assets/images/egypt/${name}.png" class="symbol-img" alt="${name}">`;
     }
-    if (themeId === 'maya' && index === 0) {
-      // Maya mask is generated and ready
-      return `<img src="assets/images/maya/mask.png" class="symbol-img" alt="mask">`;
+    if (themeId === 'maya') {
+      if (index === 0) return `<img src="assets/images/maya/mask.png" class="symbol-img" alt="mask">`;
+      // Map remaining to gorgeous Vegas assets so everything displays in consistent 3D style
+      const vegasNames = ['bell', 'clover', 'bar', 'seven', 'diamond', 'crown', 'star'];
+      const name = vegasNames[index - 1] || vegasNames[0];
+      return `<img src="assets/images/las-vegas/${name}.png" class="symbol-img" alt="${name}">`;
+    }
+    if (themeId === 'underwater') {
+      // Map to vegas assets for premium 3D look
+      const vegasNames = ['cherry', 'bell', 'clover', 'bar', 'seven', 'diamond', 'crown', 'star'];
+      const name = vegasNames[index] || vegasNames[0];
+      return `<img src="assets/images/las-vegas/${name}.png" class="symbol-img" alt="${name}">`;
+    }
+    if (themeId === 'space') {
+      // Map to vegas assets for premium 3D look
+      const vegasNames = ['cherry', 'bell', 'clover', 'bar', 'seven', 'diamond', 'crown', 'star'];
+      const name = vegasNames[index] || vegasNames[0];
+      return `<img src="assets/images/las-vegas/${name}.png" class="symbol-img" alt="${name}">`;
     }
     const renderFunc = this._rendererMap[themeId]?.[index] || this._rendererMap['las-vegas'][0];
     return renderFunc();
