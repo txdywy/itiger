@@ -165,17 +165,37 @@ export class ParticleRenderer {
             this._drawStar(ctx, cx, cy, 5, halfSize, halfSize * 0.45);
             ctx.fill();
             break;
-          case 2: // diamond
+          case 2: // coin (circle with inner details)
+            // Outer golden circle
             ctx.beginPath();
-            ctx.moveTo(cx, -halfSize);
-            ctx.lineTo(halfSize, cy);
-            ctx.lineTo(cx, halfSize);
-            ctx.lineTo(-halfSize, cy);
-            ctx.closePath();
+            ctx.arc(cx, cy, halfSize, 0, Math.PI * 2);
             ctx.fill();
+            
+            // Inner darker ring detail
+            ctx.fillStyle = `rgb(${Math.max(0, r - 60)}, ${Math.max(0, g - 60)}, 0)`;
+            ctx.beginPath();
+            ctx.arc(cx, cy, halfSize * 0.65, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Central gold square hole
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            ctx.fillRect(-halfSize * 0.25, -halfSize * 0.25, halfSize * 0.5, halfSize * 0.5);
             break;
-          case 3: // rect
-            ctx.fillRect(-halfSize, -halfSize * 0.4, size, size * 0.6);
+          case 3: // rect (gold bars if golden colored, otherwise normal rect)
+            if (r > 200 && g > 150 && b < 100) {
+              // Draw a gold bar bevel
+              ctx.fillStyle = `rgb(${Math.max(0, r - 65)}, ${Math.max(0, g - 65)}, 0)`;
+              ctx.fillRect(-halfSize, -halfSize * 0.4, size, size * 0.6);
+              
+              ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+              ctx.fillRect(-halfSize + 2, -halfSize * 0.4 + 2, size - 4, size * 0.6 - 4);
+              
+              // Shine highlight
+              ctx.fillStyle = `rgb(${Math.min(255, r + 45)}, ${Math.min(255, g + 45)}, 120)`;
+              ctx.fillRect(-halfSize + 2, -halfSize * 0.4 + 2, size - 4, 3);
+            } else {
+              ctx.fillRect(-halfSize, -halfSize * 0.4, size, size * 0.6);
+            }
             break;
           case 4: // ring
             ctx.strokeStyle = `rgb(${r},${g},${b})`;

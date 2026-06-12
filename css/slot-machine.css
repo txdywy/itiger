@@ -7,11 +7,17 @@
   position: relative;
   width: min(92vw, 650px);
   background: var(--reel-bg);
-  border: 2px solid var(--reel-border);
-  border-radius: clamp(12px, 2vw, 20px);
-  box-shadow: var(--reel-shadow), 0 20px 60px rgba(0,0,0,0.5);
-  padding: clamp(10px, 2.5vw, 24px);
+  border: 4px solid #D4AF37; /* Gold bevel frame */
+  border-radius: clamp(16px, 2.5vw, 24px);
+  box-shadow: 
+    0 0 0 2px #553300, 
+    0 0 20px rgba(212, 175, 55, 0.4), 
+    0 25px 70px rgba(0,0,0,0.8),
+    inset 0 0 45px rgba(0, 0, 0, 0.65);
+  padding: clamp(12px, 3vw, 28px);
   overflow: hidden;
+  background-image: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 100%);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Decorative corner accents */
@@ -19,27 +25,29 @@
 .slot-machine::after {
   content: '';
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border: 3px solid var(--gold, #FFD700);
-  opacity: 0.4;
+  opacity: 0.6;
   pointer-events: none;
 }
 
 .slot-machine::before {
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
   border-right: none;
   border-bottom: none;
-  border-radius: 8px 0 0 0;
+  border-radius: 10px 0 0 0;
+  box-shadow: -2px -2px 6px rgba(255,215,0,0.3);
 }
 
 .slot-machine::after {
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   border-left: none;
   border-bottom: none;
-  border-radius: 0 8px 0 0;
+  border-radius: 0 10px 0 0;
+  box-shadow: 2px -2px 6px rgba(255,215,0,0.3);
 }
 
 /* Win multiplier display */
@@ -81,6 +89,14 @@
   border-radius: clamp(6px, 1vw, 10px);
   background: var(--reel-cell-bg);
   border: 1px solid var(--reel-cell-border);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.reel.anticipating {
+  animation: anticipatePulse 0.5s infinite ease-in-out;
+  border-color: rgba(255, 0, 100, 0.8);
+  box-shadow: 0 0 15px rgba(255, 0, 100, 0.6);
+  z-index: 5;
 }
 
 /* Reel gradient overlays (top/bottom fade) */
@@ -119,15 +135,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(1.8rem, 5vw, 3.5rem);
   flex-shrink: 0;
   position: relative;
-  transition: filter 0.3s;
+  transition: filter 0.3s, transform 0.3s;
+}
+
+.symbol-svg {
+  width: 85%;
+  height: 85%;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.symbol-cell.win-active .symbol-svg {
+  transform: scale(1.1);
+}
+
+.symbol-cell::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.02);
 }
 
 .symbol-cell.highlight {
   animation: symbolLand 0.4s ease-out;
   filter: drop-shadow(0 0 10px var(--symbol-glow));
+}
+
+.symbol-cell.win-active {
+  animation: symbolZoomPulse 1.2s infinite ease-in-out;
+  z-index: 10;
+}
+
+.symbol-cell.win-active::after {
+  border-color: rgba(255, 215, 0, 0.5);
+  background: rgba(255, 215, 0, 0.05);
+  box-shadow: inset 0 0 12px rgba(255, 215, 0, 0.2), 0 0 8px rgba(255, 215, 0, 0.3);
 }
 
 .symbol-cell.wild {
@@ -139,6 +187,7 @@
   color: var(--accent, #FF6B00);
   text-shadow: 0 0 15px var(--accent);
 }
+
 
 /* Payline Overlay */
 .payline-overlay {
@@ -224,20 +273,23 @@
 /* Spin Button */
 .spin-btn {
   position: relative;
-  width: clamp(70px, 16vw, 110px);
-  height: clamp(70px, 16vw, 110px);
+  width: clamp(76px, 17vw, 116px);
+  height: clamp(76px, 17vw, 116px);
   border-radius: 50%;
   font-family: var(--font-display);
-  font-size: clamp(0.7rem, 1.8vw, 1rem);
+  font-size: clamp(0.75rem, 1.8vw, 1.1rem);
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--btn-primary-color);
-  background: var(--btn-primary-bg);
-  border: 3px solid var(--gold, #FFD700);
+  background: radial-gradient(circle at 50% 30%, var(--gold-light, #FFF8DC), var(--gold, #FFD700) 40%, var(--gold-dark, #B8860B) 85%);
+  border: 4px solid #553300;
   cursor: pointer;
-  box-shadow: var(--btn-primary-glow), 0 4px 15px rgba(0,0,0,0.3);
-  transition: all 0.2s;
+  box-shadow: 
+    0 8px 0 #553300, 
+    0 12px 25px rgba(0,0,0,0.5), 
+    var(--btn-primary-glow);
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   overflow: hidden;
   z-index: 5;
 }
@@ -245,32 +297,43 @@
 .spin-btn::before {
   content: '';
   position: absolute;
-  inset: -3px;
+  inset: -6px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent, var(--gold, #FFD700), transparent, var(--gold, #FFD700), transparent);
+  background: conic-gradient(from 0deg, transparent, var(--gold, #FFD700), transparent, var(--accent, #FF6B00), transparent);
   opacity: 0;
-  animation: spin 3s linear infinite;
+  animation: rotateSpin 2.5s linear infinite;
   z-index: -1;
   transition: opacity 0.3s;
 }
 
 .spin-btn:hover::before {
-  opacity: 0.5;
+  opacity: 0.85;
 }
 
 .spin-btn:hover {
-  transform: scale(1.05);
-  box-shadow: var(--btn-primary-hover-glow), 0 6px 25px rgba(0,0,0,0.4);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 
+    0 10px 0 #553300, 
+    0 15px 30px rgba(0,0,0,0.6), 
+    var(--btn-primary-hover-glow);
 }
 
 .spin-btn:active {
-  transform: scale(0.95);
+  transform: translateY(6px);
+  box-shadow: 
+    0 2px 0 #553300, 
+    0 4px 10px rgba(0,0,0,0.7), 
+    var(--btn-primary-glow);
 }
 
 .spin-btn.spinning {
-  opacity: 0.7;
+  opacity: 0.85;
   cursor: not-allowed;
-  animation: pulseScale 0.8s ease-in-out infinite;
+  transform: translateY(6px) scale(0.98);
+  box-shadow: 
+    0 2px 0 #553300, 
+    0 4px 10px rgba(0,0,0,0.6);
+  background: radial-gradient(circle at center, #997722, #553300);
 }
 
 .spin-btn .ripple {
@@ -526,4 +589,38 @@
 
 .max-bet-indicator.show {
   opacity: 1;
+}
+
+/* Theme-specific symbol cell card framing overrides */
+[data-theme="las-vegas"] .symbol-cell::after {
+  border-color: rgba(255, 20, 147, 0.25);
+  background: rgba(26, 0, 64, 0.25);
+  box-shadow: inset 0 0 10px rgba(255, 20, 147, 0.1);
+}
+
+[data-theme="egypt"] .symbol-cell::after {
+  border-color: rgba(212, 175, 55, 0.35);
+  background: rgba(45, 24, 16, 0.45);
+  border-radius: 4px; /* Blocky sand tiles */
+  box-shadow: inset 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="maya"] .symbol-cell::after {
+  border-color: rgba(80, 200, 120, 0.4);
+  background: rgba(10, 26, 10, 0.5);
+  border-radius: 6px; /* Smooth jade blocks */
+  box-shadow: inset 0 0 12px rgba(80, 200, 120, 0.25);
+}
+
+[data-theme="underwater"] .symbol-cell::after {
+  border-color: rgba(0, 206, 209, 0.4);
+  background: rgba(0, 48, 64, 0.4);
+  border-radius: 14px; /* Highly rounded bubble bubbles */
+  box-shadow: inset 0 0 12px rgba(0, 206, 209, 0.25);
+}
+
+[data-theme="space"] .symbol-cell::after {
+  border-color: rgba(224, 64, 251, 0.35);
+  background: rgba(10, 0, 32, 0.45);
+  box-shadow: inset 0 0 12px rgba(0, 229, 255, 0.2);
 }

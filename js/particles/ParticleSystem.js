@@ -15,6 +15,10 @@ export class ParticleSystem {
     this.lastTime = 0;
     this.densityMultiplier = 1; // for mobile performance scaling
 
+    // FPS tracking and dynamic optimization properties
+    this.fps = 60;
+    this.frameTimes = [];
+
     // Detect mobile and reduce particle count
     if (window.innerWidth < 768 || navigator.maxTouchPoints > 0) {
       this.densityMultiplier = 0.5;
@@ -41,6 +45,24 @@ export class ParticleSystem {
 
     // Clamp dt to prevent huge jumps on tab switch
     if (dt > 0.1) dt = 0.016;
+
+    // Monitor FPS
+    this.frameTimes.push(now);
+    while (this.frameTimes.length > 0 && this.frameTimes[0] <= now - 1000) {
+      this.frameTimes.shift();
+    }
+    const currentFps = this.frameTimes.length;
+    this.fps = this.fps * 0.95 + currentFps * 0.05; // smoothed FPS
+
+    // Throttling down density multiplier if performance drops below 54fps
+    if (this.fps < 54 && this.densityMultiplier > 0.15) {
+      this.densityMultiplier -= 0.05 * dt;
+    } else if (this.fps > 58 && this.densityMultiplier < 1.0) {
+      const maxDensity = (window.innerWidth < 768 || navigator.maxTouchPoints > 0) ? 0.5 : 1.0;
+      if (this.densityMultiplier < maxDensity) {
+        this.densityMultiplier += 0.02 * dt;
+      }
+    }
 
     this.update(dt);
     this.render();
@@ -177,8 +199,6 @@ export class ParticleSystem {
   }
 
   /**
-   * Golden shower - coins/gold falling from above
-   */
   goldenShower(centerX, width, intensity = 1) {
     const count = Math.round(120 * intensity * this.densityMultiplier);
     return this.createEmitter({
@@ -192,14 +212,14 @@ export class ParticleSystem {
       speedVariance: 0.4,
       lifetime: 3,
       gravity: 0.4,
-      sizeStart: 6,
-      sizeEnd: 2,
+      sizeStart: 20,
+      sizeEnd: 14,
       colorFrom: { r: 1, g: 0.84, b: 0 },    // gold
       colorTo: { r: 1, g: 1, b: 0.8 },        // light gold
-      alpha: 0.9,
-      shape: 2,  // diamond
+      alpha: 0.95,
+      shape: 2,  // coin
       rotSpeed: 8,
-      blendMode: 'lighter',
+      blendMode: 'source-over',
     });
   }
 
@@ -323,13 +343,13 @@ export class ParticleSystem {
         speedVariance: 0.3,
         lifetime: 3,
         gravity: 0.3,
-        sizeStart: 10,
-        sizeEnd: 4,
+        sizeStart: 24,
+        sizeEnd: 18,
         colorFrom: { r: 1, g: 0.84, b: 0 },
         colorTo: { r: 1, g: 0.65, b: 0 },
-        shape: 2,  // diamond
+        shape: 2,  // coin
         rotSpeed: 10,
-        blendMode: 'lighter',
+        blendMode: 'source-over',
       }));
     }
     return emitters;
@@ -356,6 +376,140 @@ export class ParticleSystem {
       alpha: 0.6,
       shape: 4,  // ring
       blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Fire Blast - massive fire explosion
+   */
+  fireBlast(x, y) {
+    const intensity = 1.6;
+    const count = Math.round(180 * intensity * this.densityMultiplier);
+    // Erupting fire sparks
+    this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 340,
+      speedVariance: 0.6,
+      lifetime: 1.4,
+      gravity: -0.2, // slightly floating up
+      sizeStart: 25,
+      sizeEnd: 4,
+      colorFrom: { r: 1, g: 0.8, b: 0 },
+      colorTo: { r: 1, g: 0.1, b: 0 },
+      alpha: 0.9,
+      shape: 0, // circle
+      blendMode: 'lighter',
+    });
+
+    // Outer ring shockwave
+    this.fireRing(x, y, 80);
+  }
+
+  /**
+   * Frost Storm - ice blizzard
+   */
+  frostStorm(x, y) {
+    const intensity = 1.5;
+    const count = Math.round(150 * this.densityMultiplier);
+    // Cold starburst
+    this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 260,
+      speedVariance: 0.5,
+      lifetime: 1.8,
+      gravity: 0.1,
+      sizeStart: 18,
+      sizeEnd: 2,
+      colorFrom: { r: 0.8, g: 0.95, b: 1 }, // ice white
+      colorTo: { r: 0.2, g: 0.6, b: 1 },    // deep ice blue
+      alpha: 0.9,
+      shape: 1, // star (ice crystals)
+      rotSpeed: 5,
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Electric Storm - lightning sparks
+   */
+  electricStorm(x, y) {
+    const count = Math.round(120 * this.densityMultiplier);
+    // Shock sparks
+    this.createEmitter({
+      x, y,
+      burstCount: count,
+      angle: 0,
+      spread: Math.PI * 2,
+      speed: 400,
+      speedVariance: 0.7,
+      lifetime: 0.8,
+      gravity: 0.2,
+      sizeStart: 12,
+      sizeEnd: 1,
+      colorFrom: { r: 1, g: 1, b: 1 },      // white flash
+      colorTo: { r: 0.6, g: 0, b: 1 },      // deep violet neon
+      alpha: 1.0,
+      shape: 4, // ring (shockwave arcs)
+      rotSpeed: 15,
+      blendMode: 'lighter',
+    });
+  }
+
+  /**
+   * Gold Sprayer - fountain spraying coins & gold bars
+   */
+  goldSprayer(centerX, centerY) {
+    // Emitters spraying gold coins (shape 2) and gold bars (shape 3) upwards
+    const count = Math.round(80 * this.densityMultiplier);
+    
+    // Coins fountain
+    this.createEmitter({
+      x: centerX,
+      y: centerY,
+      rate: count,
+      duration: 3,
+      angle: -Math.PI / 2, // upwards
+      spread: Math.PI * 0.4,
+      speed: 400,
+      speedVariance: 0.5,
+      lifetime: 3.5,
+      gravity: 0.6, // pull back down heavily
+      sizeStart: 22,
+      sizeEnd: 16,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 1, g: 1, b: 0.8 },
+      alpha: 1.0,
+      shape: 2, // coin
+      rotSpeed: 8,
+      blendMode: 'source-over',
+    });
+
+    // Gold bars fountain
+    this.createEmitter({
+      x: centerX,
+      y: centerY,
+      rate: Math.round(count * 0.4),
+      duration: 2.5,
+      angle: -Math.PI / 2,
+      spread: Math.PI * 0.3,
+      speed: 380,
+      speedVariance: 0.4,
+      lifetime: 3.5,
+      gravity: 0.65,
+      sizeStart: 28,
+      sizeEnd: 22,
+      colorFrom: { r: 1, g: 0.84, b: 0 },
+      colorTo: { r: 1, g: 0.5, b: 0 },
+      alpha: 1.0,
+      shape: 3, // rect (renders as gold bar)
+      rotSpeed: 6,
+      blendMode: 'source-over',
     });
   }
 }

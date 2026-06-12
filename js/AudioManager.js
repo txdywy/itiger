@@ -334,4 +334,76 @@ export class AudioManager {
     osc.start(t);
     osc.stop(t + 0.06);
   }
+
+  /**
+   * Tension rising sound for anticipation reels
+   */
+  startAnticipation() {
+    if (!this.initialized || this.muted) return null;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.exponentialRampToValueAtTime(1400, t + 4); // Rise up to 1400Hz over 4s
+
+    const lfo = this.ctx.createOscillator();
+    const lfoGain = this.ctx.createGain();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(8, t); // 8Hz modulation
+    lfoGain.gain.setValueAtTime(0.08, t);
+    lfo.connect(lfoGain);
+    lfoGain.connect(gain.gain);
+
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.12, t + 0.15);
+
+    osc.connect(gain);
+    gain.connect(this.sfxGain);
+
+    lfo.start(t);
+    osc.start(t);
+
+    return {
+      osc,
+      lfo,
+      gain,
+      stop: () => {
+        if (!this.ctx) return;
+        const stopTime = this.ctx.currentTime;
+        try {
+          gain.gain.setValueAtTime(gain.gain.value, stopTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, stopTime + 0.1);
+          setTimeout(() => {
+            try {
+              osc.stop();
+              lfo.stop();
+            } catch (e) {}
+          }, 120);
+        } catch (err) {}
+      }
+    };
+  }
+
+  /**
+   * Quick odometer sound tick
+   */
+  playOdometerTick(pitchFactor = 1.0) {
+    if (!this.initialized || this.muted) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800 * pitchFactor, t);
+
+    gain.gain.setValueAtTime(0.12, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.03);
+
+    osc.connect(gain);
+    gain.connect(this.sfxGain);
+    osc.start(t);
+    osc.stop(t + 0.04);
+  }
 }

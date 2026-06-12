@@ -112,6 +112,15 @@ export class ParticlePool {
       // Apply gravity (standardized at 400 px/s²)
       this.vy[i] += 400 * this.gravity[i] * dt;
 
+      // Bounce physics off bottom window border for coins (shape 2)
+      const floor = window.innerHeight - 15;
+      if (this.shape[i] === 2 && this.y[i] > floor && this.vy[i] > 0) {
+        this.y[i] = floor;
+        this.vy[i] = -this.vy[i] * 0.45; // Dampened bounce
+        this.vx[i] *= 0.75; // Friction
+        this.rotSpeed[i] = (Math.random() - 0.5) * 12; // Spinning boost
+      }
+
       // Update size (lerp from start to end based on life)
       const lifeNorm = this.life[i]; // 1.0 = just born, 0.0 = dead
       this.size[i] = this.sizeEnd[i] + (this.sizeStart[i] - this.sizeEnd[i]) * lifeNorm;

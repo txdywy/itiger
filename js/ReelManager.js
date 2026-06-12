@@ -1,3 +1,5 @@
+import { SymbolRenderer } from './SymbolRenderer.js';
+
 /**
  * ReelManager - Handles reel spinning animation using GSAP
  */
@@ -20,6 +22,8 @@ export class ReelManager {
     this.container.innerHTML = '';
     this.reels = [];
 
+    const themeId = this.themeManager.currentTheme;
+
     for (let c = 0; c < this.cols; c++) {
       const reelEl = document.createElement('div');
       reelEl.className = 'reel';
@@ -34,7 +38,9 @@ export class ReelManager {
       for (let i = 0; i < totalCells; i++) {
         const cell = document.createElement('div');
         cell.className = 'symbol-cell';
-        cell.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        const symIdx = Math.floor(Math.random() * symbols.length);
+        cell.innerHTML = SymbolRenderer.render(themeId, symIdx);
+        cell.dataset.symbolIndex = symIdx;
         cell.dataset.row = i;
         strip.appendChild(cell);
       }
@@ -75,9 +81,12 @@ export class ReelManager {
    */
   updateSymbols() {
     const symbols = this.themeManager.getSymbols();
+    const themeId = this.themeManager.currentTheme;
     this.reels.forEach(reel => {
       reel.cells.forEach(cell => {
-        cell.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        const symIdx = Math.floor(Math.random() * symbols.length);
+        cell.innerHTML = SymbolRenderer.render(themeId, symIdx);
+        cell.dataset.symbolIndex = symIdx;
         cell.className = 'symbol-cell';
       });
     });
@@ -90,80 +99,40 @@ export class ReelManager {
    * @param {Function} onTick - called for each tick during spin
    * @returns {Promise} resolves when all reels have stopped
    */
-  async spin(targetSymbols, onReelStop, onTick) {
+  async spin(targetSymbols, onReelStop, onTick, audio, particles) {
     if (this.spinning) return;
     this.spinning = true;
 
     const symbols = this.themeManager.getSymbols();
-    const spinDuration = 0.8; // base duration per reel
-    const staggerDelay = 0.2; // delay between reels
+    const scatterSymbolIndex = 7; // Scatter index is 7
+    let scatterCount = 0;
+    let anticipationSoundNode = null;
 
     // Stop tick sound
     if (this.tickInterval) clearInterval(this.tickInterval);
 
-    const promises = this.reels.map((reel, reelIdx) => {
-      return new Promise(resolve => {
-        const delay = reelIdx * staggerDelay;
-        const duration = spinDuration + reelIdx * 0.15; // later reels spin longer
+    // Phase 1: Start infinite spin loops for ALL reels simultaneously
+    this.reels.forEach((reel, reelIdx) => {
+      reel.element.classList.add('reel-spinning');
+      gsap.set(reel.strip, { y: 0, force3D: true });
 
-        // Set target symbols on the visible cells
-        setTimeout(() => {
-          // Add spinning class for blur effect
-          reel.element.classList.add('reel-spinning');
-
-          // Set final symbols
-          for (let row = 0; row < this.rows; row++) {
-            if (reel.cells[row] && targetSymbols[reelIdx] && targetSymbols[reelIdx][row] !== undefined) {
-              reel.cells[row].textContent = symbols[targetSymbols[reelIdx][row]];
-              reel.cells[row].dataset.symbolIndex = targetSymbols[reelIdx][row];
+      // Animate the strip endlessly
+      reel.spinTween = gsap.to(reel.strip, {
+        y: this.symbolSize * 3,
+        duration: 0.15,
+        ease: 'none',
+        repeat: -1,
+        force3D: true,
+        onRepeat: () => {
+          // Shuffle symbols slightly while spinning
+          reel.cells.forEach((cell, i) => {
+            if (i >= this.rows) {
+              const symIdx = Math.floor(Math.random() * symbols.length);
+              cell.innerHTML = SymbolRenderer.render(themeId, symIdx);
+              cell.dataset.symbolIndex = symIdx;
             }
-          }
-
-          // Fill extra cells with random symbols for spin illusion
-          for (let i = this.rows; i < reel.cells.length; i++) {
-            reel.cells[i].textContent = symbols[Math.floor(Math.random() * symbols.length)];
-          }
-        }, delay * 500);
-
-        // Animate the strip
-        setTimeout(() => {
-          // Reset strip position
-          gsap.set(reel.strip, { y: 0 });
-
-          // Spin animation - move strip down then bounce back to start
-          const totalDistance = this.symbolSize * 6; // spin through 6 symbols worth
-
-          const tl = gsap.timeline();
-
-          // Quick blur spin
-          tl.to(reel.strip, {
-            y: totalDistance,
-            duration: duration * 0.6,
-            ease: 'power1.in',
           });
-
-          // Set final position and bounce-stop
-          tl.set(reel.strip, { y: -this.symbolSize * 3 });
-          tl.to(reel.strip, {
-            y: 0,
-            duration: duration * 0.4,
-            ease: 'back.out(1.4)',
-            onComplete: () => {
-              reel.element.classList.remove('reel-spinning');
-
-              // Add landing animation to visible cells
-              for (let row = 0; row < this.rows; row++) {
-                if (reel.cells[row]) {
-                  reel.cells[row].classList.add('highlight');
-                  setTimeout(() => reel.cells[row].classList.remove('highlight'), 500);
-                }
-              }
-
-              if (onReelStop) onReelStop(reelIdx);
-              resolve();
-            },
-          });
-        }, delay * 1000 + 100);
+        }
       });
     });
 
@@ -172,7 +141,115 @@ export class ReelManager {
       this.tickInterval = setInterval(() => onTick(), 80);
     }
 
-    await Promise.all(promises);
+    const stopReel = (reelIdx) => {
+      return new Promise(resolve => {
+        const reel = this.reels[reelIdx];
+
+        // Determine if this reel is currently anticipating
+        const isAnticipating = reel.element.classList.contains('anticipating');
+
+        if (isAnticipating) {
+          reel.element.classList.remove('anticipating');
+          if (anticipationSoundNode) {
+            anticipationSoundNode.stop();
+            anticipationSoundNode = null;
+          }
+        }
+
+        // Set target symbols on the visible cells
+        for (let row = 0; row < this.rows; row++) {
+          if (reel.cells[row] && targetSymbols[reelIdx] && targetSymbols[reelIdx][row] !== undefined) {
+            const symIdx = targetSymbols[reelIdx][row];
+            reel.cells[row].innerHTML = SymbolRenderer.render(themeId, symIdx);
+            reel.cells[row].dataset.symbolIndex = symIdx;
+          }
+        }
+        // Fill extra cells with random symbols
+        for (let i = this.rows; i < reel.cells.length; i++) {
+          const symIdx = Math.floor(Math.random() * symbols.length);
+          reel.cells[i].innerHTML = SymbolRenderer.render(themeId, symIdx);
+          reel.cells[i].dataset.symbolIndex = symIdx;
+        }
+
+        // Stop the endless tween
+        if (reel.spinTween) {
+          reel.spinTween.kill();
+        }
+
+        // Reset and animate stop with elastic bounce
+        gsap.set(reel.strip, { y: -this.symbolSize * 3, force3D: true });
+        gsap.to(reel.strip, {
+          y: 0,
+          duration: 0.45,
+          ease: 'back.out(1.8)',
+          force3D: true,
+          onComplete: () => {
+            reel.element.classList.remove('reel-spinning');
+
+            // Add landing highlight to cells
+            for (let row = 0; row < this.rows; row++) {
+              if (reel.cells[row]) {
+                reel.cells[row].classList.add('highlight');
+                // Trigger landing sparks if it's a scatter or wild
+                const symIdx = parseInt(reel.cells[row].dataset.symbolIndex);
+                if ((symIdx === 7 || symIdx === 6) && particles) {
+                  const rect = reel.cells[row].getBoundingClientRect();
+                  particles.sparks(rect.left + rect.width / 2, rect.top + rect.height / 2, 1.2);
+                }
+                setTimeout(() => reel.cells[row].classList.remove('highlight'), 500);
+              }
+            }
+
+            // Count scatters on stopped reel
+            for (let row = 0; row < this.rows; row++) {
+              if (targetSymbols[reelIdx][row] === scatterSymbolIndex) {
+                scatterCount++;
+              }
+            }
+
+            // Trigger stop callback
+            if (onReelStop) onReelStop(reelIdx);
+
+            resolve();
+          }
+        });
+      });
+    };
+
+    // Phase 2: Stop reels one by one with delays, applying anticipation dynamically
+    for (let reelIdx = 0; reelIdx < this.cols; reelIdx++) {
+      // Base wait time before stopping this reel
+      let waitTime = reelIdx === 0 ? 800 : 350; // Milliseconds
+
+      // Check if this reel should anticipate based on scatters landed so far
+      if (reelIdx >= 2 && scatterCount >= 2) {
+        const nextReel = this.reels[reelIdx];
+        nextReel.element.classList.add('anticipating');
+
+        // Add ambient sparks on the anticipating reel
+        let sparksTimer = setInterval(() => {
+          if (!nextReel.element.classList.contains('anticipating')) {
+            clearInterval(sparksTimer);
+            return;
+          }
+          if (particles) {
+            const rect = nextReel.element.getBoundingClientRect();
+            particles.sparks(rect.left + rect.width / 2, rect.top + rect.height / 2, 0.4);
+          }
+        }, 250);
+
+        // Play anticipation audio
+        if (audio && audio.startAnticipation) {
+          anticipationSoundNode = audio.startAnticipation();
+        }
+
+        // Extend spin time for anticipation tension
+        waitTime = 2000;
+      }
+
+      await new Promise(r => setTimeout(r, waitTime));
+      await stopReel(reelIdx);
+    }
 
     // Stop tick sound
     if (this.tickInterval) {
@@ -187,19 +264,12 @@ export class ReelManager {
    * Highlight winning symbol positions
    */
   highlightWins(positions) {
-    // Clear previous highlights
-    this.reels.forEach(reel => {
-      reel.cells.forEach(cell => {
-        cell.classList.remove('highlight', 'wild', 'scatter');
-      });
-    });
-
     // Apply win highlights
     positions.forEach(pos => {
       const [reel, row] = pos.split('-').map(Number);
       if (this.reels[reel] && this.reels[reel].cells[row]) {
         const cell = this.reels[reel].cells[row];
-        cell.classList.add('highlight');
+        cell.classList.add('highlight', 'win-active');
 
         const symIdx = parseInt(cell.dataset.symbolIndex);
         if (symIdx === 6) cell.classList.add('wild');
@@ -211,8 +281,9 @@ export class ReelManager {
   clearHighlights() {
     this.reels.forEach(reel => {
       reel.cells.forEach(cell => {
-        cell.classList.remove('highlight', 'wild', 'scatter');
+        cell.classList.remove('highlight', 'win-active', 'wild', 'scatter');
       });
+      reel.element.classList.remove('anticipating');
     });
   }
 }

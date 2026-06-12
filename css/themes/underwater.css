@@ -93,9 +93,8 @@
 }
 
 [data-theme="underwater"] .spin-btn {
-  background: radial-gradient(circle, #00CED1, #008B8B);
-  border-color: #00CED1;
-  box-shadow: 0 0 25px rgba(0, 206, 209, 0.4);
+  background: radial-gradient(circle at 50% 30%, var(--gold-light), var(--gold) 40%, var(--gold-dark) 85%);
+  border-color: #004d4d;
 }
 
 /* Coral accent on buttons */

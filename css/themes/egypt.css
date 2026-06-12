@@ -95,11 +95,6 @@
 }
 
 [data-theme="egypt"] .spin-btn {
-  background: radial-gradient(circle, #FFD700, #B8860B);
-  border-color: #FFD700;
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(0,0,0,0.2);
-}
-
-[data-theme="egypt"] .spin-btn:hover {
-  box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), inset 0 0 15px rgba(0,0,0,0.1);
+  background: radial-gradient(circle at 50% 30%, var(--gold-light), var(--gold) 40%, var(--gold-dark) 85%);
+  border-color: #553300;
 }
