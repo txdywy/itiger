@@ -6,7 +6,7 @@
 [data-theme="egypt"] {
   --bg-primary: #1a0a00;
   --bg-secondary: #2d1810;
-  --bg-gradient: linear-gradient(180deg, #0d0500 0%, #2d1810 30%, #1a0a00 60%, #3d2010 100%);
+  --bg-gradient: linear-gradient(180deg, #0d0500 0%, #2d1810 25%, #1a0a00 50%, #3d2010 80%, #0d0500 100%);
 
   --gold: #FFD700;
   --gold-dark: #B8860B;
@@ -21,16 +21,19 @@
   --font-display: 'Cinzel', 'Georgia', serif;
   --font-body: 'Cormorant Garamond', 'Georgia', serif;
 
-  --panel-bg: rgba(45, 24, 16, 0.8);
-  --panel-border: rgba(184, 134, 11, 0.4);
+  --panel-bg: rgba(45, 24, 16, 0.75);
+  --panel-border: rgba(184, 134, 11, 0.35);
   --panel-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 
-  --reel-bg: rgba(26, 10, 0, 0.9);
-  --reel-border: rgba(184, 134, 11, 0.5);
-  --reel-shadow: 0 0 30px rgba(255, 215, 0, 0.15), 0 0 60px rgba(255, 102, 0, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.6);
-  --reel-cell-bg: rgba(45, 24, 16, 0.4);
-  --reel-cell-border: rgba(184, 134, 11, 0.15);
-  --reel-divider: rgba(184, 134, 11, 0.2);
+  --reel-bg: rgba(26, 10, 0, 0.92);
+  --reel-border: rgba(184, 134, 11, 0.45);
+  --reel-shadow:
+    0 0 30px rgba(255, 215, 0, 0.12),
+    0 0 80px rgba(255, 102, 0, 0.06),
+    inset 0 0 50px rgba(0, 0, 0, 0.6);
+  --reel-cell-bg: rgba(45, 24, 16, 0.35);
+  --reel-cell-border: rgba(184, 134, 11, 0.12);
+  --reel-divider: rgba(184, 134, 11, 0.18);
 
   --symbol-size: clamp(48px, 11vw, 90px);
   --symbol-glow: rgba(255, 215, 0, 0.5);
@@ -38,10 +41,10 @@
   --btn-primary-bg: linear-gradient(135deg, #B8860B, #FFD700, #B8860B);
   --btn-primary-color: #1a0a00;
   --btn-primary-glow: 0 0 25px rgba(255, 215, 0, 0.4), 0 0 50px rgba(255, 102, 0, 0.15);
-  --btn-primary-hover-glow: 0 0 40px rgba(255, 215, 0, 0.7), 0 0 80px rgba(255, 102, 0, 0.25);
-  --btn-secondary-bg: rgba(45, 24, 16, 0.6);
+  --btn-primary-hover-glow: 0 0 45px rgba(255, 215, 0, 0.7), 0 0 90px rgba(255, 102, 0, 0.25);
+  --btn-secondary-bg: rgba(45, 24, 16, 0.55);
   --btn-secondary-color: #F5DEB3;
-  --btn-secondary-border: rgba(184, 134, 11, 0.3);
+  --btn-secondary-border: rgba(184, 134, 11, 0.25);
 
   --win-flash: #FFD700;
   --win-text-gradient: linear-gradient(135deg, #FFD700, #FF8C00, #FFD700, #B8860B);
@@ -50,25 +53,28 @@
   --logo-gradient: linear-gradient(135deg, #FFD700, #CD853F, #FFD700);
   --logo-glow: rgba(255, 215, 0, 0.6);
 
-  --bet-bg: rgba(45, 24, 16, 0.6);
-  --bet-border: rgba(184, 134, 11, 0.3);
+  --bet-bg: rgba(45, 24, 16, 0.5);
+  --bet-border: rgba(184, 134, 11, 0.25);
 
   --particle-primary: #FF6600;
   --particle-secondary: #FFD700;
+
+  --grain-opacity: 0.04;
 }
 
-/* Egypt-specific background decorations */
+/* Desert heat atmosphere with multiple light sources */
 [data-theme="egypt"] body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 20% 80%, rgba(255, 102, 0, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 100%, rgba(205, 133, 63, 0.06) 0%, transparent 40%);
+    radial-gradient(ellipse 50% 40% at 15% 85%, rgba(255, 102, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 50% at 85% 15%, rgba(255, 215, 0, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(205, 133, 63, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse 30% 30% at 70% 60%, rgba(255, 102, 0, 0.04) 0%, transparent 50%);
   z-index: 0;
   pointer-events: none;
-  animation: heatShimmer 4s ease-in-out infinite;
+  animation: heatShimmer 5s ease-in-out infinite;
 }
 
 /* Hieroglyph border pattern */
@@ -76,25 +82,91 @@
   border-image: repeating-linear-gradient(
     90deg,
     var(--gold-dark) 0px,
-    var(--gold-dark) 10px,
-    transparent 10px,
-    transparent 15px,
-    var(--gold) 15px,
-    var(--gold) 16px,
+    var(--gold-dark) 12px,
+    transparent 12px,
     transparent 16px,
-    transparent 20px
+    var(--gold) 16px,
+    var(--gold) 17px,
+    transparent 17px,
+    transparent 22px
   ) 2;
+  box-shadow:
+    0 0 0 3px rgba(184,134,11,0.15),
+    0 0 40px rgba(255, 215, 0, 0.1),
+    0 0 80px rgba(255, 102, 0, 0.04),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
 }
 
-[data-theme="egypt"] .slot-machine::before,
+[data-theme="egypt"] .slot-machine::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,215,0,0.3) 25%,
+    transparent 50%,
+    rgba(255,102,0,0.2) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: borderShimmer 5s linear infinite;
+  opacity: 0.4;
+}
+
 [data-theme="egypt"] .slot-machine::after {
   border-color: var(--gold-dark);
-  opacity: 0.6;
-  width: 50px;
-  height: 50px;
+  opacity: 0.55;
+  width: 55px;
+  height: 55px;
+  filter: drop-shadow(0 0 12px rgba(255,215,0,0.3));
+}
+
+[data-theme="egypt"] .reels-container::before {
+  border-color: var(--gold-dark);
+  opacity: 0.55;
+  filter: drop-shadow(0 0 12px rgba(255,215,0,0.3));
 }
 
 [data-theme="egypt"] .spin-btn {
-  background: radial-gradient(circle at 50% 30%, var(--gold-light), var(--gold) 40%, var(--gold-dark) 85%);
+  background: radial-gradient(circle at 50% 28%,
+    #FFF8DC 0%,
+    #FFD700 35%,
+    #B8860B 80%,
+    #7a5a0a 100%
+  );
   border-color: #553300;
+}
+
+[data-theme="egypt"] .spin-btn::before {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    #FFD700 15%,
+    transparent 30%,
+    #FF6600 50%,
+    transparent 65%,
+    #FFD700 80%,
+    transparent 100%
+  );
+}
+
+/* Sand particle grain */
+[data-theme="egypt"] body::after {
+  opacity: 0.05;
+}
+
+/* Torch glow on header */
+[data-theme="egypt"] .header-bar {
+  box-shadow:
+    0 0 20px rgba(255,102,0,0.04),
+    inset 0 1px 0 rgba(255,215,0,0.04);
+}
+
+[data-theme="egypt"] .theme-btn.active {
+  color: #FFD700;
+  border-color: #FFD700;
+  box-shadow: 0 0 18px rgba(255,215,0,0.25);
+}
+
+/* Warm golden tint on win history */
+[data-theme="egypt"] .win-history {
+  box-shadow: inset 0 0 15px rgba(255,102,0,0.03);
 }

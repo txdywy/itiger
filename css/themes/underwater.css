@@ -6,7 +6,7 @@
 [data-theme="underwater"] {
   --bg-primary: #001020;
   --bg-secondary: #002040;
-  --bg-gradient: linear-gradient(180deg, #000a15 0%, #002040 30%, #001530 60%, #003060 100%);
+  --bg-gradient: linear-gradient(180deg, #000a15 0%, #002040 25%, #001530 50%, #003060 80%, #000a15 100%);
 
   --gold: #00CED1;
   --gold-dark: #008B8B;
@@ -21,19 +21,19 @@
   --font-display: 'Cormorant Garamond', 'Georgia', serif;
   --font-body: 'Cormorant Garamond', 'Georgia', serif;
 
-  --panel-bg: rgba(0, 32, 64, 0.7);
-  --panel-border: rgba(0, 206, 209, 0.25);
+  --panel-bg: rgba(0, 32, 64, 0.65);
+  --panel-border: rgba(0, 206, 209, 0.2);
   --panel-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 
-  --reel-bg: rgba(0, 16, 32, 0.9);
-  --reel-border: rgba(0, 206, 209, 0.3);
+  --reel-bg: rgba(0, 16, 32, 0.92);
+  --reel-border: rgba(0, 206, 209, 0.25);
   --reel-shadow:
-    0 0 30px rgba(0, 206, 209, 0.12),
-    0 0 60px rgba(0, 100, 200, 0.08),
-    inset 0 0 40px rgba(0, 0, 0, 0.5);
-  --reel-cell-bg: rgba(0, 32, 64, 0.3);
-  --reel-cell-border: rgba(0, 206, 209, 0.08);
-  --reel-divider: rgba(0, 206, 209, 0.12);
+    0 0 30px rgba(0, 206, 209, 0.1),
+    0 0 80px rgba(0, 100, 200, 0.06),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
+  --reel-cell-bg: rgba(0, 32, 64, 0.25);
+  --reel-cell-border: rgba(0, 206, 209, 0.06);
+  --reel-divider: rgba(0, 206, 209, 0.1);
 
   --symbol-size: clamp(48px, 11vw, 90px);
   --symbol-glow: rgba(0, 206, 209, 0.5);
@@ -41,10 +41,10 @@
   --btn-primary-bg: linear-gradient(135deg, #008B8B, #00CED1, #008B8B);
   --btn-primary-color: #001020;
   --btn-primary-glow: 0 0 25px rgba(0, 206, 209, 0.4), 0 0 50px rgba(0, 100, 200, 0.15);
-  --btn-primary-hover-glow: 0 0 40px rgba(0, 206, 209, 0.7), 0 0 80px rgba(0, 100, 200, 0.25);
-  --btn-secondary-bg: rgba(0, 206, 209, 0.08);
+  --btn-primary-hover-glow: 0 0 45px rgba(0, 206, 209, 0.7), 0 0 90px rgba(0, 100, 200, 0.25);
+  --btn-secondary-bg: rgba(0, 206, 209, 0.07);
   --btn-secondary-color: #87CEEB;
-  --btn-secondary-border: rgba(0, 206, 209, 0.2);
+  --btn-secondary-border: rgba(0, 206, 209, 0.18);
 
   --win-flash: #00CED1;
   --win-text-gradient: linear-gradient(135deg, #00CED1, #FFD700, #FF6B6B, #00CED1);
@@ -53,47 +53,81 @@
   --logo-gradient: linear-gradient(135deg, #00CED1, #87CEEB, #FFD700);
   --logo-glow: rgba(0, 206, 209, 0.5);
 
-  --bet-bg: rgba(0, 32, 64, 0.5);
-  --bet-border: rgba(0, 206, 209, 0.2);
+  --bet-bg: rgba(0, 32, 64, 0.45);
+  --bet-border: rgba(0, 206, 209, 0.15);
 
   --particle-primary: #00CED1;
   --particle-secondary: #87CEEB;
+
+  --grain-opacity: 0.02;
 }
 
-/* Ocean depth atmosphere */
+/* Multi-layer ocean depth with caustics */
 [data-theme="underwater"] body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 20% 80%, rgba(0, 206, 209, 0.06) 0%, transparent 45%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 100, 200, 0.06) 0%, transparent 45%),
-    radial-gradient(ellipse at 50% 50%, rgba(255, 107, 107, 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse 50% 60% at 15% 85%, rgba(0, 206, 209, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 85% 15%, rgba(0, 100, 200, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(255, 107, 107, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 40% at 30% 40%, rgba(0, 206, 209, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 70% 60%, rgba(135, 206, 235, 0.03) 0%, transparent 50%);
   z-index: 0;
   pointer-events: none;
-  animation: heatShimmer 6s ease-in-out infinite;
+  animation: heatShimmer 7s ease-in-out infinite;
 }
 
 /* Caustics light effect on reel area */
 [data-theme="underwater"] .reels-container {
   background: rgba(0, 0, 0, 0.3);
-  border-color: rgba(0, 206, 209, 0.2);
-  box-shadow: inset 0 0 40px rgba(0, 206, 209, 0.03);
+  border-color: rgba(0, 206, 209, 0.15);
+  box-shadow: inset 0 0 40px rgba(0, 206, 209, 0.025);
 }
 
 [data-theme="underwater"] .slot-machine {
   border-image: none;
-  border-color: rgba(0, 206, 209, 0.25);
+  border-color: rgba(0, 206, 209, 0.2);
+  box-shadow:
+    0 0 0 3px rgba(0,206,209,0.08),
+    0 0 40px rgba(0, 206, 209, 0.08),
+    0 0 80px rgba(0, 100, 200, 0.04),
+    inset 0 0 50px rgba(0, 0, 0, 0.4);
 }
 
-[data-theme="underwater"] .slot-machine::before,
+[data-theme="underwater"] .slot-machine::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,206,209,0.2) 25%,
+    transparent 50%,
+    rgba(135,206,235,0.15) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: borderShimmer 7s linear infinite;
+  opacity: 0.4;
+}
+
 [data-theme="underwater"] .slot-machine::after {
   border-color: #00CED1;
-  opacity: 0.35;
+  opacity: 0.3;
+  filter: drop-shadow(0 0 10px rgba(0,206,209,0.3));
+}
+
+[data-theme="underwater"] .reels-container::before {
+  border-color: #00CED1;
+  opacity: 0.3;
+  filter: drop-shadow(0 0 10px rgba(0,206,209,0.3));
 }
 
 [data-theme="underwater"] .spin-btn {
-  background: radial-gradient(circle at 50% 30%, var(--gold-light), var(--gold) 40%, var(--gold-dark) 85%);
+  background: radial-gradient(circle at 50% 28%,
+    #E0FFFF 0%,
+    #00CED1 35%,
+    #008B8B 80%,
+    #004d4d 100%
+  );
   border-color: #004d4d;
 }
 
@@ -103,20 +137,34 @@
   border-color: #FF6B6B;
 }
 
-/* Bubble effect via pseudo-elements on game container */
+/* Enhanced bubble effect */
 [data-theme="underwater"] .game-container::after {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(2px 2px at 10% 80%, rgba(0,206,209,0.3), transparent),
-    radial-gradient(3px 3px at 25% 60%, rgba(0,206,209,0.2), transparent),
-    radial-gradient(2px 2px at 40% 90%, rgba(135,206,235,0.3), transparent),
-    radial-gradient(4px 4px at 55% 70%, rgba(0,206,209,0.15), transparent),
-    radial-gradient(2px 2px at 70% 85%, rgba(135,206,235,0.25), transparent),
-    radial-gradient(3px 3px at 85% 65%, rgba(0,206,209,0.2), transparent),
-    radial-gradient(2px 2px at 95% 75%, rgba(135,206,235,0.3), transparent);
+    radial-gradient(3px 3px at 8% 75%, rgba(0,206,209,0.35), transparent),
+    radial-gradient(4px 4px at 18% 55%, rgba(0,206,209,0.25), transparent),
+    radial-gradient(2px 2px at 30% 85%, rgba(135,206,235,0.35), transparent),
+    radial-gradient(5px 5px at 45% 65%, rgba(0,206,209,0.18), transparent),
+    radial-gradient(3px 3px at 55% 80%, rgba(135,206,235,0.3), transparent),
+    radial-gradient(4px 4px at 68% 60%, rgba(0,206,209,0.22), transparent),
+    radial-gradient(2px 2px at 78% 90%, rgba(135,206,235,0.35), transparent),
+    radial-gradient(3px 3px at 88% 70%, rgba(0,206,209,0.2), transparent),
+    radial-gradient(6px 6px at 92% 50%, rgba(0,206,209,0.12), transparent);
   pointer-events: none;
   z-index: 0;
-  animation: bubbleFloat 12s ease-in-out infinite;
+  animation: bubbleFloat 14s ease-in-out infinite;
+}
+
+[data-theme="underwater"] .header-bar {
+  box-shadow:
+    0 0 15px rgba(0,206,209,0.04),
+    inset 0 1px 0 rgba(0,206,209,0.04);
+}
+
+[data-theme="underwater"] .theme-btn.active {
+  color: #00CED1;
+  border-color: #00CED1;
+  box-shadow: 0 0 18px rgba(0,206,209,0.25);
 }

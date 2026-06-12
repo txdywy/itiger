@@ -34,6 +34,20 @@ body {
   -webkit-user-select: none;
 }
 
+/* Film grain overlay for texture depth */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--grain-opacity, 0.035);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px;
+  mix-blend-mode: overlay;
+}
+
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display, 'Orbitron', sans-serif);
@@ -86,83 +100,97 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   width: 100%;
   max-width: 700px;
-  padding: clamp(6px, 1.5vw, 16px) clamp(12px, 3vw, 24px);
+  padding: clamp(8px, 1.8vw, 18px) clamp(14px, 3.5vw, 28px);
   background: var(--panel-bg, rgba(0,0,0,0.6));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border: 1px solid var(--panel-border, rgba(255,255,255,0.1));
-  border-radius: 12px;
+  border-radius: 16px;
+  box-shadow:
+    var(--panel-shadow, 0 4px 30px rgba(0,0,0,0.3)),
+    inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .logo {
   font-family: var(--font-display, 'Orbitron', sans-serif);
-  font-size: clamp(1.2rem, 3.5vw, 2rem);
+  font-size: clamp(1.3rem, 3.8vw, 2.2rem);
   font-weight: 900;
   background: var(--logo-gradient, linear-gradient(135deg, #FFD700, #FF6B00));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: none;
-  filter: drop-shadow(0 0 8px var(--logo-glow, rgba(255,215,0,0.5)));
-  letter-spacing: 0.05em;
+  filter: drop-shadow(0 0 12px var(--logo-glow, rgba(255,215,0,0.5)));
+  letter-spacing: 0.06em;
 }
 
 .balance-display {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--font-display, 'Orbitron', sans-serif);
-  font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+  font-size: clamp(0.95rem, 2.8vw, 1.4rem);
   font-weight: 700;
   color: var(--gold, #FFD700);
 }
 
 .balance-display .coin-icon {
-  font-size: 1.2em;
+  font-size: 1.3em;
   animation: coinSpin 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px var(--gold-glow, rgba(255,215,0,0.5)));
 }
 
 .balance-amount {
-  min-width: 80px;
+  min-width: 85px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 20px var(--gold-glow, rgba(255,215,0,0.4));
 }
 
 .btn-add-coins {
-  padding: 4px 12px;
+  padding: 5px 14px;
   font-size: clamp(0.65rem, 1.5vw, 0.8rem);
   font-weight: 700;
   font-family: var(--font-display, 'Orbitron', sans-serif);
   color: #000;
-  background: var(--gold, #FFD700);
-  border: none;
-  border-radius: 6px;
+  background: linear-gradient(135deg, var(--gold-light, #FFF8DC), var(--gold, #FFD700));
+  border: 1px solid var(--gold-dark, #B8860B);
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, box-shadow 0.2s;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(255,215,0,0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .btn-add-coins:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 12px var(--gold-glow, rgba(255,215,0,0.6));
+  transform: scale(1.08);
+  box-shadow:
+    0 2px 8px rgba(255,215,0,0.3),
+    0 0 20px var(--gold-glow, rgba(255,215,0,0.5));
 }
 
 .btn-add-coins:active {
   transform: scale(0.95);
+  box-shadow: 0 1px 4px rgba(255,215,0,0.2);
 }
 
 /* Theme Selector */
 .theme-selector {
   display: flex;
   gap: clamp(4px, 1vw, 10px);
-  padding: clamp(4px, 1vw, 8px);
+  padding: clamp(5px, 1.2vw, 10px);
   background: var(--panel-bg, rgba(0,0,0,0.4));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
   border: 1px solid var(--panel-border, rgba(255,255,255,0.1));
   border-radius: 50px;
   overflow-x: auto;
   scrollbar-width: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 4px 20px rgba(0,0,0,0.2);
 }
 
 .theme-selector::-webkit-scrollbar {
@@ -172,8 +200,8 @@ h1, h2, h3, h4, h5, h6 {
 .theme-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px clamp(10px, 2vw, 18px);
+  gap: 7px;
+  padding: 7px clamp(12px, 2.2vw, 20px);
   font-family: var(--font-display, 'Orbitron', sans-serif);
   font-size: clamp(0.6rem, 1.4vw, 0.8rem);
   font-weight: 600;
@@ -182,25 +210,38 @@ h1, h2, h3, h4, h5, h6 {
   border: 2px solid transparent;
   border-radius: 50px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   white-space: nowrap;
   flex-shrink: 0;
+  position: relative;
 }
 
 .theme-btn .theme-icon {
   font-size: 1.2em;
+  transition: transform 0.3s;
 }
 
 .theme-btn:hover {
   color: var(--text-primary, #fff);
   background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+
+.theme-btn:hover .theme-icon {
+  transform: scale(1.15);
 }
 
 .theme-btn.active {
   color: var(--gold, #FFD700);
   border-color: var(--gold, #FFD700);
   background: rgba(255,215,0,0.1);
-  box-shadow: 0 0 15px rgba(255,215,0,0.2);
+  box-shadow:
+    0 0 15px rgba(255,215,0,0.2),
+    inset 0 0 10px rgba(255,215,0,0.05);
+}
+
+.theme-btn.active .theme-icon {
+  transform: scale(1.1);
 }
 
 /* Win Display Overlay */
@@ -222,25 +263,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .win-text {
   font-family: var(--font-display, 'Orbitron', sans-serif);
-  font-size: clamp(2rem, 8vw, 5rem);
+  font-size: clamp(2.5rem, 10vw, 6rem);
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   background: var(--win-text-gradient, linear-gradient(135deg, #FFD700, #FF6B00, #FFD700));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 20px var(--gold-glow, rgba(255,215,0,0.8)));
+  filter:
+    drop-shadow(0 0 30px var(--gold-glow, rgba(255,215,0,0.8)))
+    drop-shadow(0 0 60px var(--gold-glow, rgba(255,215,0,0.4)));
   text-align: center;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.15);
 }
 
 .win-amount-display {
   font-family: var(--font-display, 'Orbitron', sans-serif);
-  font-size: clamp(1.5rem, 5vw, 3rem);
+  font-size: clamp(1.8rem, 6vw, 3.5rem);
   font-weight: 700;
   color: var(--gold, #FFD700);
-  text-shadow: 0 0 30px var(--gold-glow, rgba(255,215,0,0.8));
-  margin-top: 10px;
+  text-shadow:
+    0 0 30px var(--gold-glow, rgba(255,215,0,0.8)),
+    0 0 60px var(--gold-glow, rgba(255,215,0,0.4)),
+    0 2px 4px rgba(0,0,0,0.5);
+  margin-top: 12px;
+  letter-spacing: 0.05em;
 }
 
 /* Free Spins Banner */
@@ -249,16 +297,26 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   left: 0;
   right: 0;
-  padding: 8px;
-  background: linear-gradient(90deg, var(--accent, #FF6B00), var(--gold, #FFD700), var(--accent, #FF6B00));
+  padding: 10px 16px;
+  background: linear-gradient(90deg,
+    var(--accent, #FF6B00),
+    var(--gold, #FFD700) 30%,
+    var(--accent, #FF6B00) 50%,
+    var(--gold, #FFD700) 70%,
+    var(--accent, #FF6B00));
+  background-size: 200% 100%;
+  animation: shimmerBanner 3s linear infinite;
   text-align: center;
   font-family: var(--font-display, 'Orbitron', sans-serif);
-  font-size: clamp(0.8rem, 2vw, 1.1rem);
+  font-size: clamp(0.85rem, 2.2vw, 1.2rem);
   font-weight: 700;
   color: #000;
   z-index: 50;
   transform: translateY(-100%);
-  transition: transform 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+  letter-spacing: 0.08em;
 }
 
 .free-spins-banner.active {
@@ -270,20 +328,22 @@ h1, h2, h3, h4, h5, h6 {
   background: none;
   border: none;
   color: var(--text-secondary, #888);
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   cursor: pointer;
-  padding: 4px;
-  transition: color 0.2s, transform 0.2s;
+  padding: 6px;
+  transition: color 0.2s, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  filter: drop-shadow(0 0 4px rgba(255,255,255,0.1));
 }
 
 .settings-btn:hover {
-  color: var(--text-primary, #fff);
-  transform: rotate(30deg);
+  color: var(--gold, #FFD700);
+  transform: rotate(60deg) scale(1.1);
+  filter: drop-shadow(0 0 8px var(--gold-glow, rgba(255,215,0,0.4)));
 }
 
 /* Scrollbar for win history */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -292,5 +352,9 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb {
   background: var(--panel-border, rgba(255,255,255,0.2));
-  border-radius: 2px;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-glow, rgba(255,215,0,0.4));
 }

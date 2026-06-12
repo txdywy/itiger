@@ -6,7 +6,7 @@
 [data-theme="maya"] {
   --bg-primary: #0a1a0a;
   --bg-secondary: #1a2a10;
-  --bg-gradient: linear-gradient(180deg, #050d05 0%, #1a2a10 30%, #0a1a0a 60%, #1f3520 100%);
+  --bg-gradient: linear-gradient(180deg, #050d05 0%, #1a2a10 25%, #0a1a0a 50%, #1f3520 80%, #050d05 100%);
 
   --gold: #50C878;
   --gold-dark: #2E8B57;
@@ -21,19 +21,19 @@
   --font-display: 'Cinzel', 'Georgia', serif;
   --font-body: 'Cormorant Garamond', 'Georgia', serif;
 
-  --panel-bg: rgba(26, 42, 16, 0.8);
-  --panel-border: rgba(80, 200, 120, 0.3);
+  --panel-bg: rgba(26, 42, 16, 0.75);
+  --panel-border: rgba(80, 200, 120, 0.25);
   --panel-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 
-  --reel-bg: rgba(10, 26, 10, 0.9);
-  --reel-border: rgba(80, 200, 120, 0.35);
+  --reel-bg: rgba(10, 26, 10, 0.92);
+  --reel-border: rgba(80, 200, 120, 0.3);
   --reel-shadow:
-    0 0 30px rgba(80, 200, 120, 0.12),
-    0 0 60px rgba(218, 165, 32, 0.06),
-    inset 0 0 40px rgba(0, 0, 0, 0.5);
+    0 0 30px rgba(80, 200, 120, 0.1),
+    0 0 80px rgba(218, 165, 32, 0.04),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
   --reel-cell-bg: rgba(26, 42, 16, 0.3);
-  --reel-cell-border: rgba(80, 200, 120, 0.1);
-  --reel-divider: rgba(80, 200, 120, 0.15);
+  --reel-cell-border: rgba(80, 200, 120, 0.08);
+  --reel-divider: rgba(80, 200, 120, 0.12);
 
   --symbol-size: clamp(48px, 11vw, 90px);
   --symbol-glow: rgba(80, 200, 120, 0.5);
@@ -41,10 +41,10 @@
   --btn-primary-bg: linear-gradient(135deg, #2E8B57, #50C878, #2E8B57);
   --btn-primary-color: #0a1a0a;
   --btn-primary-glow: 0 0 25px rgba(80, 200, 120, 0.4), 0 0 50px rgba(218, 165, 32, 0.1);
-  --btn-primary-hover-glow: 0 0 40px rgba(80, 200, 120, 0.7), 0 0 80px rgba(218, 165, 32, 0.2);
-  --btn-secondary-bg: rgba(80, 200, 120, 0.08);
+  --btn-primary-hover-glow: 0 0 45px rgba(80, 200, 120, 0.7), 0 0 90px rgba(218, 165, 32, 0.2);
+  --btn-secondary-bg: rgba(80, 200, 120, 0.07);
   --btn-secondary-color: #98FB98;
-  --btn-secondary-border: rgba(80, 200, 120, 0.25);
+  --btn-secondary-border: rgba(80, 200, 120, 0.2);
 
   --win-flash: #50C878;
   --win-text-gradient: linear-gradient(135deg, #50C878, #DAA520, #00CED1, #50C878);
@@ -53,53 +53,100 @@
   --logo-gradient: linear-gradient(135deg, #50C878, #DAA520, #50C878);
   --logo-glow: rgba(80, 200, 120, 0.5);
 
-  --bet-bg: rgba(26, 42, 16, 0.6);
-  --bet-border: rgba(80, 200, 120, 0.2);
+  --bet-bg: rgba(26, 42, 16, 0.5);
+  --bet-border: rgba(80, 200, 120, 0.18);
 
   --particle-primary: #50C878;
   --particle-secondary: #DAA520;
+
+  --grain-opacity: 0.04;
 }
 
-/* Maya jungle atmosphere */
+/* Jungle atmosphere with dappled light */
 [data-theme="maya"] body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 70%, rgba(80, 200, 120, 0.06) 0%, transparent 45%),
-    radial-gradient(ellipse at 70% 30%, rgba(218, 165, 32, 0.04) 0%, transparent 45%),
-    radial-gradient(ellipse at 50% 100%, rgba(0, 206, 209, 0.03) 0%, transparent 40%);
+    radial-gradient(ellipse 40% 50% at 25% 75%, rgba(80, 200, 120, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 75% 25%, rgba(218, 165, 32, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 30% at 50% 100%, rgba(0, 206, 209, 0.04) 0%, transparent 45%),
+    radial-gradient(ellipse 25% 25% at 15% 30%, rgba(80, 200, 120, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 25% 25% at 85% 70%, rgba(218, 165, 32, 0.03) 0%, transparent 50%);
   z-index: 0;
   pointer-events: none;
-  animation: torchFlicker 5s ease-in-out infinite;
+  animation: torchFlicker 6s ease-in-out infinite;
 }
 
 /* Stone frame effect */
 [data-theme="maya"] .slot-machine {
   border-image: none;
-  border-color: rgba(80, 200, 120, 0.3);
+  border-color: rgba(80, 200, 120, 0.25);
   box-shadow:
-    0 0 30px rgba(80, 200, 120, 0.12),
-    inset 0 0 30px rgba(0, 0, 0, 0.4);
+    0 0 0 3px rgba(80,200,120,0.1),
+    0 0 40px rgba(80, 200, 120, 0.08),
+    inset 0 0 40px rgba(0, 0, 0, 0.4),
+    inset 0 0 80px rgba(80, 200, 120, 0.015);
 }
 
-[data-theme="maya"] .slot-machine::before,
+[data-theme="maya"] .slot-machine::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(80,200,120,0.25) 25%,
+    transparent 50%,
+    rgba(218,165,32,0.2) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: borderShimmer 6s linear infinite;
+  opacity: 0.4;
+}
+
 [data-theme="maya"] .slot-machine::after {
   border-color: #50C878;
-  opacity: 0.5;
+  opacity: 0.45;
+  filter: drop-shadow(0 0 10px rgba(80,200,120,0.3));
+}
+
+[data-theme="maya"] .reels-container::before {
+  border-color: #50C878;
+  opacity: 0.45;
+  filter: drop-shadow(0 0 10px rgba(80,200,120,0.3));
 }
 
 [data-theme="maya"] .spin-btn {
-  background: radial-gradient(circle at 50% 30%, var(--gold-light), var(--gold) 40%, var(--gold-dark) 85%);
+  background: radial-gradient(circle at 50% 28%,
+    #C8FFC8 0%,
+    #50C878 35%,
+    #2E8B57 80%,
+    #1a4a2a 100%
+  );
   border-color: #1a4a2a;
 }
 
 [data-theme="maya"] .reels-container {
   background: rgba(0, 0, 0, 0.35);
-  border-color: rgba(80, 200, 120, 0.2);
+  border-color: rgba(80, 200, 120, 0.15);
 }
 
-/* Vine-like decorations on reel edges */
 [data-theme="maya"] .reel {
-  border-color: rgba(80, 200, 120, 0.12);
+  border-color: rgba(80, 200, 120, 0.1);
+}
+
+/* Mossy grain texture */
+[data-theme="maya"] body::after {
+  opacity: 0.045;
+}
+
+[data-theme="maya"] .header-bar {
+  box-shadow:
+    0 0 15px rgba(80,200,120,0.04),
+    inset 0 1px 0 rgba(80,200,120,0.04);
+}
+
+[data-theme="maya"] .theme-btn.active {
+  color: #50C878;
+  border-color: #50C878;
+  box-shadow: 0 0 18px rgba(80,200,120,0.25);
 }
