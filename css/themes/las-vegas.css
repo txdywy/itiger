@@ -18,8 +18,8 @@
   --text-secondary: #CC88FF;
   --text-muted: #8855AA;
 
-  --font-display: 'Orbitron', 'Arial Black', sans-serif;
-  --font-body: 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Outfit', 'Orbitron', 'Arial Black', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
 
   --panel-bg: rgba(26, 0, 64, 0.8);
   --panel-border: rgba(255, 20, 147, 0.3);

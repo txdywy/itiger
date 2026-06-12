@@ -348,17 +348,16 @@ export class UIManager {
 
     path.setAttribute('d', d);
     path.setAttribute('stroke', color);
-    path.setAttribute('stroke-width', '5');
+    path.setAttribute('stroke-width', '8');
     path.setAttribute('stroke-linecap', 'round');
     path.setAttribute('stroke-linejoin', 'round');
     path.setAttribute('fill', 'none');
-    path.setAttribute('filter', `drop-shadow(0 0 10px ${color})`);
+    path.setAttribute('filter', `drop-shadow(0 0 15px ${color}) drop-shadow(0 0 25px ${color})`);
 
     // Dash array for dynamic drawing pulse
-    const pathLength = 1000;
-    path.style.strokeDasharray = '20, 10';
+    path.style.strokeDasharray = '35, 15';
     path.style.strokeDashoffset = '0';
-    path.style.animation = 'laserPathGlow 1s infinite linear';
+    path.style.animation = 'laserPathGlow 0.8s infinite linear';
 
     svg.appendChild(path);
   }

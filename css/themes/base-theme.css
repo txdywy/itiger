@@ -22,8 +22,8 @@
   --text-muted: #666666;
 
   /* Typography */
-  --font-display: 'Orbitron', 'Segoe UI', sans-serif;
-  --font-body: 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Outfit', 'Orbitron', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
 
   /* Panel / Glass */
   --panel-bg: rgba(0, 0, 0, 0.5);
