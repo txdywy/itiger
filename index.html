@@ -242,6 +242,22 @@
 
   <!-- GSAP (loaded before modules) -->
   <script src="lib/gsap.min.js?v=1"></script>
+  <script>
+    // Fallback: if GSAP failed to load (e.g. local file 404 from stale cache), load from CDN
+    if (typeof gsap === 'undefined') {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js';
+      document.head.appendChild(s);
+    }
+    // Safety: if loading screen is still visible after 5s, hide it and show error
+    setTimeout(function() {
+      var loader = document.getElementById('loading-screen');
+      if (loader && loader.style.display !== 'none') {
+        loader.style.display = 'none';
+        console.error('Loading timeout - GSAP may have failed to load');
+      }
+    }, 5000);
+  </script>
 
   <!-- Game Modules -->
   <script type="module" src="js/main.js"></script>
