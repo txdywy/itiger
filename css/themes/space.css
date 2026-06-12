@@ -1,12 +1,12 @@
 /* ============================================
    iTiger Theme - Cosmic Space 🚀
-   Dark purple, nebula, stars, cosmic dust
+   Nebula, planets, dense star field, cosmic rings
    ============================================ */
 
 [data-theme="space"] {
   --bg-primary: #0D0221;
   --bg-secondary: #150538;
-  --bg-gradient: linear-gradient(180deg, #05010f 0%, #150538 25%, #0D0221 50%, #1a0845 80%, #05010f 100%);
+  --bg-gradient: linear-gradient(180deg, #05010f 0%, #10032e 20%, #150538 50%, #0D0221 80%, #05010f 100%);
 
   --gold: #E040FB;
   --gold-dark: #9C27B0;
@@ -62,55 +62,80 @@
   --grain-opacity: 0.02;
 }
 
-/* Deep nebula with dense star field */
+/* ── Deep nebula + planet + dense star field ──────────────────────── */
 [data-theme="space"] body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 50% 40% at 20% 30%, rgba(224, 64, 251, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse 40% 50% at 75% 70%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
+    /* Nebula clouds */
+    radial-gradient(ellipse 55% 45% at 20% 30%, rgba(224, 64, 251, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 45% 55% at 75% 70%, rgba(0, 229, 255, 0.1) 0%, transparent 50%),
     radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255, 64, 129, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 30% 20% at 40% 20%, rgba(156,39,176,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 25% 25% at 65% 80%, rgba(0,229,255,0.04) 0%, transparent 60%),
+    /* Planet silhouette — bottom right */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3C!-- Planet --%3E%3Ccircle cx='320' cy='340' r='120' fill='%230D0221'/%3E%3Ccircle cx='320' cy='340' r='120' fill='none' stroke='%23150538' stroke-width='1' opacity='0.3'/%3E%3C!-- Rings --%3Cellipse cx='320' cy='340' rx='180' ry='35' fill='none' stroke='%23E040FB' stroke-width='1.5' opacity='0.08'/%3E%3Cellipse cx='320' cy='340' rx='200' ry='40' fill='none' stroke='%2300E5FF' stroke-width='1' opacity='0.05'/%3E%3Cellipse cx='320' cy='340' rx='160' ry='30' fill='none' stroke='%23FF4081' stroke-width='0.8' opacity='0.06'/%3E%3C!-- Planet surface bands --%3E%3Cpath d='M200 320 Q260 310 320 315 Q380 320 440 310' stroke='%23150538' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M200 345 Q260 340 320 342 Q380 345 440 338' stroke='%23150538' stroke-width='1.5' fill='none' opacity='0.25'/%3E%3C/svg%3E"),
     /* Dense star field */
-    radial-gradient(1px 1px at 12% 18%, #fff 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 28% 72%, rgba(255,255,255,0.9) 0%, transparent 100%),
-    radial-gradient(1px 1px at 42% 28%, rgba(255,255,255,0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 58% 55%, rgba(255,255,255,0.8) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 72% 15%, rgba(255,255,255,0.9) 0%, transparent 100%),
-    radial-gradient(1px 1px at 85% 82%, rgba(255,255,255,0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 35% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 65% 38%, rgba(255,255,255,0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 5% 90%, rgba(255,255,255,0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 48% 88%, rgba(224,64,251,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 78% 42%, rgba(0,229,255,0.5) 0%, transparent 100%);
+    radial-gradient(1px 1px at 8% 12%, #fff 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 18% 68%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 33% 82%, rgba(224,64,251,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42% 22%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 48%, rgba(0,229,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 62% 15%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 72% 55%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 38%, rgba(224,64,251,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 75%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 8%, rgba(0,229,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 48% 90%, rgba(255,64,129,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 12%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 88%, rgba(224,64,251,0.5) 0%, transparent 100%);
+  background-size: auto, auto, auto, auto, auto, 400px 400px;
+  background-position: center, center, center, center, center, bottom right;
+  background-repeat: no-repeat;
   z-index: 0;
   pointer-events: none;
   animation: starTwinkle 5s ease-in-out infinite alternate;
 }
 
+/* ── Orbital lines + constellation grid ───────────────────────────── */
+[data-theme="space"] .game-container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    /* Orbital arc decoration */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3C!-- Orbital ellipses --%3E%3Cellipse cx='600' cy='400' rx='500' ry='350' fill='none' stroke='%23E040FB' stroke-width='0.5' opacity='0.04'/%3E%3Cellipse cx='600' cy='400' rx='400' ry='280' fill='none' stroke='%2300E5FF' stroke-width='0.5' opacity='0.03'/%3E%3Cellipse cx='600' cy='400' rx='300' ry='200' fill='none' stroke='%23FF4081' stroke-width='0.5' opacity='0.03'/%3E%3C!-- Small planet on orbit --%3E%3Ccircle cx='1050' cy='300' r='4' fill='%2300E5FF' opacity='0.12'/%3E%3Ccircle cx='1050' cy='300' r='8' fill='none' stroke='%2300E5FF' stroke-width='0.5' opacity='0.08'/%3E%3C!-- Constellation lines --%3E%3Cpath d='M100 100 L180 150 L250 120 L300 180' stroke='%23B39DDB' stroke-width='0.3' fill='none' opacity='0.08'/%3E%3Cpath d='M900 150 L950 200 L1020 170' stroke='%23B39DDB' stroke-width='0.3' fill='none' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Cosmic dust grain ────────────────────────────────────────────── */
+[data-theme="space"] body::after {
+  opacity: 0.025;
+}
+
 [data-theme="space"] .slot-machine {
   border-image: none;
-  border-color: rgba(224, 64, 251, 0.2);
+  border-color: rgba(224,64,251,0.2);
   box-shadow:
     0 0 0 3px rgba(224,64,251,0.08),
-    0 0 50px rgba(224, 64, 251, 0.1),
-    0 0 100px rgba(0, 229, 255, 0.04),
-    inset 0 0 50px rgba(0, 0, 0, 0.5),
-    inset 0 0 100px rgba(224, 64, 251, 0.015);
+    0 0 50px rgba(224,64,251,0.1),
+    0 0 100px rgba(0,229,255,0.04),
+    inset 0 0 50px rgba(0,0,0,0.5),
+    inset 0 0 100px rgba(224,64,251,0.015);
 }
 
 [data-theme="space"] .slot-machine::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(224,64,251,0.25) 20%,
-    rgba(0,229,255,0.2) 40%,
-    transparent 50%,
-    rgba(255,64,129,0.2) 60%,
-    rgba(224,64,251,0.25) 80%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(224,64,251,0.25) 20%,
+    rgba(0,229,255,0.2) 40%, transparent 50%,
+    rgba(255,64,129,0.2) 60%, rgba(224,64,251,0.25) 80%, transparent 100%);
   background-size: 200% 100%;
   animation: borderShimmer 4s linear infinite;
   opacity: 0.5;
@@ -130,41 +155,24 @@
 
 [data-theme="space"] .spin-btn {
   background: radial-gradient(circle at 50% 28%,
-    #F3E5F5 0%,
-    #E040FB 35%,
-    #9C27B0 80%,
-    #4a004a 100%
-  );
+    #F3E5F5 0%, #E040FB 35%, #9C27B0 80%, #4a004a 100%);
   border-color: #4a004a;
 }
 
 [data-theme="space"] .spin-btn::before {
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    #E040FB 15%,
-    transparent 30%,
-    #00E5FF 50%,
-    transparent 65%,
-    #FF4081 80%,
-    transparent 100%
-  );
+  background: conic-gradient(from 0deg,
+    transparent 0%, #E040FB 15%, transparent 30%,
+    #00E5FF 50%, transparent 65%, #FF4081 80%, transparent 100%);
 }
 
 [data-theme="space"] .reels-container {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: rgba(224, 64, 251, 0.12);
+  background: rgba(0,0,0,0.4);
+  border-color: rgba(224,64,251,0.12);
 }
 
-/* Cosmic dust grain */
-[data-theme="space"] body::after {
-  opacity: 0.025;
-}
-
-/* Shooting star effect */
 [data-theme="space"] .logo {
   animation: glowPulse 3s ease-in-out infinite;
-  --glow-color: rgba(224, 64, 251, 0.6);
+  --glow-color: rgba(224,64,251,0.6);
 }
 
 [data-theme="space"] .theme-btn.active {
@@ -174,12 +182,9 @@
 }
 
 [data-theme="space"] .header-bar {
-  box-shadow:
-    0 0 20px rgba(224,64,251,0.05),
-    inset 0 1px 0 rgba(224,64,251,0.05);
+  box-shadow: 0 0 20px rgba(224,64,251,0.05), inset 0 1px 0 rgba(224,64,251,0.05);
 }
 
-/* Nebula glow on controls */
 [data-theme="space"] .bet-controls,
 [data-theme="space"] .lines-controls {
   box-shadow: inset 0 0 12px rgba(224,64,251,0.03);

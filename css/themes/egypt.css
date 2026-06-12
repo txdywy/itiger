@@ -1,12 +1,12 @@
 /* ============================================
    iTiger Theme - Ancient Egypt 🏛️
-   Gold, sand, hieroglyphs, torch fire
+   Pyramids, desert night sky, hieroglyphs, torches
    ============================================ */
 
 [data-theme="egypt"] {
   --bg-primary: #1a0a00;
   --bg-secondary: #2d1810;
-  --bg-gradient: linear-gradient(180deg, #0d0500 0%, #2d1810 25%, #1a0a00 50%, #3d2010 80%, #0d0500 100%);
+  --bg-gradient: linear-gradient(180deg, #0d0500 0%, #1a0c04 20%, #2d1810 50%, #1a0a00 80%, #0d0500 100%);
 
   --gold: #FFD700;
   --gold-dark: #B8860B;
@@ -62,50 +62,80 @@
   --grain-opacity: 0.04;
 }
 
-/* Desert heat atmosphere with multiple light sources */
+/* ── Desert night sky + pyramid silhouettes ───────────────────────── */
 [data-theme="egypt"] body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 50% 40% at 15% 85%, rgba(255, 102, 0, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse 40% 50% at 85% 15%, rgba(255, 215, 0, 0.07) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(205, 133, 63, 0.08) 0%, transparent 45%),
-    radial-gradient(ellipse 30% 30% at 70% 60%, rgba(255, 102, 0, 0.04) 0%, transparent 50%);
+    /* Warm desert air shimmer */
+    radial-gradient(ellipse 60% 50% at 15% 85%, rgba(255, 102, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 85% 15%, rgba(255, 215, 0, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(205, 133, 63, 0.08) 0%, transparent 45%),
+    /* Desert floor gradient */
+    linear-gradient(to top,
+      rgba(45, 24, 16, 0.6) 0%,
+      rgba(26, 10, 0, 0.3) 15%,
+      transparent 25%
+    ),
+    /* Pyramids silhouette (SVG) */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300' preserveAspectRatio='none'%3E%3C!-- Large pyramid left --%3E%3Cpolygon points='200,300 400,60 600,300' fill='%231a0a00'/%3E%3Cpolygon points='200,300 400,60 400,300' fill='%23200e02' opacity='0.5'/%3E%3C!-- Medium pyramid right --%3E%3Cpolygon points='700,300 850,100 1000,300' fill='%231a0a00'/%3E%3Cpolygon points='700,300 850,100 850,300' fill='%23200e02' opacity='0.5'/%3E%3C!-- Small pyramid far right --%3E%3Cpolygon points='950,300 1050,150 1150,300' fill='%23160800'/%3E%3C!-- Sand dunes --%3E%3Cpath d='M0 280 Q150 240 300 270 Q450 290 600 260 Q750 240 900 275 Q1050 290 1200 265 L1200 300 L0 300 Z' fill='%231a0a00' opacity='0.7'/%3E%3C/svg%3E");
+  background-size: auto, auto, auto, auto, 100% 300px;
+  background-position: center, center, center, center, bottom center;
+  background-repeat: no-repeat;
   z-index: 0;
   pointer-events: none;
   animation: heatShimmer 5s ease-in-out infinite;
 }
 
-/* Hieroglyph border pattern */
+/* ── Hieroglyphic pattern border + torch glow spots ──────────────── */
+[data-theme="egypt"] .game-container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    /* Torch glow — left */
+    radial-gradient(ellipse 15% 30% at 3% 40%, rgba(255,150,50,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 10% 20% at 3% 38%, rgba(255,200,100,0.04) 0%, transparent 60%),
+    /* Torch glow — right */
+    radial-gradient(ellipse 15% 30% at 97% 40%, rgba(255,150,50,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 10% 20% at 97% 38%, rgba(255,200,100,0.04) 0%, transparent 60%),
+    /* Hieroglyph pattern on left/right edges */
+    url("data:image/svg+xml,%3Csvg width='40' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='16' y='4' width='8' height='12' rx='2' fill='%23B8860B' opacity='0.08'/%3E%3Ccircle cx='20' cy='30' r='5' fill='none' stroke='%23B8860B' stroke-width='1' opacity='0.06'/%3E%3Cpath d='M14 45 L20 55 L26 45 Z' fill='%23B8860B' opacity='0.07'/%3E%3Crect x='16' y='60' width='8' height='8' fill='%23B8860B' opacity='0.05'/%3E%3C/svg%3E"),
+    /* Hieroglyph pattern on right edge */
+    url("data:image/svg+xml,%3Csvg width='40' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='16' y='4' width='8' height='12' rx='2' fill='%23B8860B' opacity='0.08'/%3E%3Ccircle cx='20' cy='30' r='5' fill='none' stroke='%23B8860B' stroke-width='1' opacity='0.06'/%3E%3Cpath d='M14 45 L20 55 L26 45 Z' fill='%23B8860B' opacity='0.07'/%3E%3Crect x='16' y='60' width='8' height='8' fill='%23B8860B' opacity='0.05'/%3E%3C/svg%3E");
+  background-size: auto, auto, auto, auto, 40px 80px, 40px 80px;
+  background-position: center, center, center, center, left top, right top;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Sand grain texture ───────────────────────────────────────────── */
+[data-theme="egypt"] body::after {
+  opacity: 0.05;
+}
+
+/* ── Hieroglyph border pattern on machine ─────────────────────────── */
 [data-theme="egypt"] .slot-machine {
   border-image: repeating-linear-gradient(
     90deg,
-    var(--gold-dark) 0px,
-    var(--gold-dark) 12px,
-    transparent 12px,
-    transparent 16px,
-    var(--gold) 16px,
-    var(--gold) 17px,
-    transparent 17px,
-    transparent 22px
+    var(--gold-dark) 0px, var(--gold-dark) 12px,
+    transparent 12px, transparent 16px,
+    var(--gold) 16px, var(--gold) 17px,
+    transparent 17px, transparent 22px
   ) 2;
   box-shadow:
     0 0 0 3px rgba(184,134,11,0.15),
-    0 0 40px rgba(255, 215, 0, 0.1),
-    0 0 80px rgba(255, 102, 0, 0.04),
-    inset 0 0 60px rgba(0, 0, 0, 0.5);
+    0 0 40px rgba(255,215,0,0.1),
+    0 0 80px rgba(255,102,0,0.04),
+    inset 0 0 60px rgba(0,0,0,0.5);
 }
 
 [data-theme="egypt"] .slot-machine::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255,215,0,0.3) 25%,
-    transparent 50%,
-    rgba(255,102,0,0.2) 75%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(255,215,0,0.3) 25%,
+    transparent 50%, rgba(255,102,0,0.2) 75%, transparent 100%);
   background-size: 200% 100%;
   animation: borderShimmer 5s linear infinite;
   opacity: 0.4;
@@ -114,8 +144,7 @@
 [data-theme="egypt"] .slot-machine::after {
   border-color: var(--gold-dark);
   opacity: 0.55;
-  width: 55px;
-  height: 55px;
+  width: 55px; height: 55px;
   filter: drop-shadow(0 0 12px rgba(255,215,0,0.3));
 }
 
@@ -127,46 +156,16 @@
 
 [data-theme="egypt"] .spin-btn {
   background: radial-gradient(circle at 50% 28%,
-    #FFF8DC 0%,
-    #FFD700 35%,
-    #B8860B 80%,
-    #7a5a0a 100%
-  );
+    #FFF8DC 0%, #FFD700 35%, #B8860B 80%, #7a5a0a 100%);
   border-color: #553300;
 }
 
-[data-theme="egypt"] .spin-btn::before {
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    #FFD700 15%,
-    transparent 30%,
-    #FF6600 50%,
-    transparent 65%,
-    #FFD700 80%,
-    transparent 100%
-  );
-}
-
-/* Sand particle grain */
-[data-theme="egypt"] body::after {
-  opacity: 0.05;
-}
-
-/* Torch glow on header */
 [data-theme="egypt"] .header-bar {
-  box-shadow:
-    0 0 20px rgba(255,102,0,0.04),
-    inset 0 1px 0 rgba(255,215,0,0.04);
+  box-shadow: 0 0 20px rgba(255,102,0,0.04), inset 0 1px 0 rgba(255,215,0,0.04);
 }
 
 [data-theme="egypt"] .theme-btn.active {
   color: #FFD700;
   border-color: #FFD700;
   box-shadow: 0 0 18px rgba(255,215,0,0.25);
-}
-
-/* Warm golden tint on win history */
-[data-theme="egypt"] .win-history {
-  box-shadow: inset 0 0 15px rgba(255,102,0,0.03);
 }
