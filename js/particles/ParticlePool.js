@@ -56,11 +56,11 @@ export class ParticlePool {
     this.y[i] = config.y || 0;
 
     const angle = config.angle || 0;
-    const speed = config.speed || 100;
+    const launchSpeed = config.speed || 100;
     const spread = config.spread || 0;
 
     const finalAngle = angle + (Math.random() - 0.5) * spread;
-    const finalSpeed = speed * (0.5 + Math.random() * 0.5);
+    const finalSpeed = launchSpeed * (0.5 + Math.random() * 0.5);
 
     this.vx[i] = Math.cos(finalAngle) * finalSpeed;
     this.vy[i] = Math.sin(finalAngle) * finalSpeed;
@@ -91,9 +91,9 @@ export class ParticlePool {
 
     // Auto-compute trail length from speed + blendMode
     // Only additive-blend (glow) particles get trails for performance
-    const speed = Math.sqrt(this.vx[i] * this.vx[i] + this.vy[i] * this.vy[i]);
-    if (this.blendMode[i] === 1 && speed > 150) {
-      this.trail[i] = Math.min(4, Math.floor(speed / 150));
+    const particleSpeed = Math.sqrt(this.vx[i] * this.vx[i] + this.vy[i] * this.vy[i]);
+    if (this.blendMode[i] === 1 && particleSpeed > 150) {
+      this.trail[i] = Math.min(4, Math.floor(particleSpeed / 150));
     } else {
       this.trail[i] = 0;
     }

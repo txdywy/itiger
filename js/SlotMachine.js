@@ -110,6 +110,7 @@ export class SlotMachine {
     // Free spin state
     this.freeSpinsRemaining = 0;
     this.freeSpinsMultiplier = 1;
+    this._currentSpinWasFreeSpin = false;
 
     // Visible window: 5 reels × 3 rows
     this.visibleSymbols = [
@@ -213,8 +214,10 @@ export class SlotMachine {
     this.spinning = true;
 
     try {
+      this._currentSpinWasFreeSpin = this.freeSpinsRemaining > 0;
+
       // Deduct total bet (skip during free spins)
-      if (this.freeSpinsRemaining <= 0) {
+      if (!this._currentSpinWasFreeSpin) {
         const totalBet = this.getTotalBet();
         this.balance -= totalBet;
         if (this.onBalanceChange) this.onBalanceChange(this.balance, -totalBet);
@@ -233,6 +236,7 @@ export class SlotMachine {
       };
     } catch (err) {
       this.spinning = false;
+      this._currentSpinWasFreeSpin = false;
       throw err;
     }
   }
@@ -359,8 +363,8 @@ export class SlotMachine {
       }
     }
 
-    // ── Apply free spins multiplier to ALL wins on this spin ─────
-    if (this.freeSpinsMultiplier > 1) {
+    // ── Apply free spins multiplier to ALL wins on free spins only ─
+    if (this._currentSpinWasFreeSpin && this.freeSpinsMultiplier > 1) {
       const m = this.freeSpinsMultiplier;
       results.totalWin *= m;
       results.wins.forEach(w => { w.amount *= m; });
@@ -383,8 +387,8 @@ export class SlotMachine {
       if (this.onBalanceChange) this.onBalanceChange(this.balance, results.totalWin);
     }
 
-    // ── Decrement free spins counter AFTER processing ────────────
-    if (this.freeSpinsRemaining > 0) {
+    // ── Decrement free spins counter AFTER processing a free spin ──
+    if (this._currentSpinWasFreeSpin && this.freeSpinsRemaining > 0) {
       this.freeSpinsRemaining--;
       if (this.freeSpinsRemaining === 0) {
         this.freeSpinsMultiplier = 1;
@@ -392,6 +396,7 @@ export class SlotMachine {
     }
 
     this.spinning = false;
+    this._currentSpinWasFreeSpin = false;
     return results;
   }
 
@@ -415,5 +420,6 @@ export class SlotMachine {
     this.betIndex = 3;
     this.freeSpinsRemaining = 0;
     this.freeSpinsMultiplier = 1;
+    this._currentSpinWasFreeSpin = false;
   }
 }

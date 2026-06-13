@@ -71,7 +71,7 @@ export class UIManager {
       this._updateDisplay();
       // Coin shower effect
       const cx = window.innerWidth / 2;
-      this.particles.goldenShower(cx, 300, 0.5);
+      this.particles?.goldenShower(cx, 300, 0.5);
     });
 
     // Theme selector
@@ -111,7 +111,9 @@ export class UIManager {
 
     // Particle density
     document.getElementById('particle-density')?.addEventListener('change', (e) => {
-      this.particles.densityMultiplier = parseFloat(e.target.value);
+      if (this.particles) {
+        this.particles.densityMultiplier = parseFloat(e.target.value);
+      }
     });
 
     // Keyboard shortcut
@@ -303,7 +305,7 @@ export class UIManager {
       // Ensure state is never permanently stuck on error
       this.celebrating = false;
       this.slot.spinning = false;
-      this.reels.spinning = false;
+      this.reels?.stopAll();
       this.clearWinCelebration();
       this._hideWinOverlay();
       if (this.particles) this.particles.clearEmitters();
@@ -521,7 +523,7 @@ export class UIManager {
     } finally {
       this._setReelGlow(false);
       this._hideWinOverlay();
-      this.particles.clearEmitters();
+      this.particles?.clearEmitters();
       this.clearWinCelebration();
       this.celebrating = false;
     }
@@ -534,8 +536,8 @@ export class UIManager {
       this._showWinText('FREE SPINS!');
       const cx = window.innerWidth / 2;
       const cy = window.innerHeight / 2;
-      this.particles.mysticGlow(cx, cy, { r: 0.5, g: 0, b: 1 });
-      this.particles.starburst(cx, cy, 1);
+      this.particles?.mysticGlow(cx, cy, { r: 0.5, g: 0, b: 1 });
+      this.particles?.starburst(cx, cy, 1);
       await this._delay(2000);
       this._hideWinOverlay();
     } finally {

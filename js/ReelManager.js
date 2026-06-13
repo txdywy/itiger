@@ -8,6 +8,7 @@ export class ReelManager {
     this.container = containerEl;
     this.themeManager = themeManager;
     this.reels = [];       // Array of { element, strip, symbols[] }
+    this.paylineSvg = null;
     this.symbolSize = 0;
     this.rows = 3;
     this.cols = 5;
@@ -21,6 +22,7 @@ export class ReelManager {
   _buildReels() {
     this.container.innerHTML = '';
     this.reels = [];
+    this.paylineSvg = this._createPaylineSvg();
 
     const themeId = this.themeManager.currentTheme;
 
@@ -54,6 +56,16 @@ export class ReelManager {
         cells: Array.from(strip.children),
       });
     }
+
+    this.container.appendChild(this.paylineSvg);
+  }
+
+  _createPaylineSvg() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = 'payline-svg';
+    svg.classList.add('payline-overlay');
+    svg.setAttribute('aria-hidden', 'true');
+    return svg;
   }
 
   _observeSize() {
@@ -74,6 +86,26 @@ export class ReelManager {
       const ro = new ResizeObserver(() => updateSize());
       ro.observe(this.container);
     }
+  }
+
+  _measureSymbolSize() {
+    const firstCell = this.reels[0]?.cells[0];
+    if (!firstCell) return 0;
+
+    const measured = firstCell.getBoundingClientRect().height || firstCell.offsetHeight;
+    if (measured > 0) {
+      this.symbolSize = measured;
+      return measured;
+    }
+
+    const cssSize = getComputedStyle(firstCell).height;
+    const parsed = Number.parseFloat(cssSize);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      this.symbolSize = parsed;
+      return parsed;
+    }
+
+    return this.symbolSize || 72;
   }
 
   /**
@@ -102,6 +134,7 @@ export class ReelManager {
   async spin(targetSymbols, onReelStop, onTick, audio, particles) {
     if (this.spinning) return;
     this.spinning = true;
+    const symbolSize = this._measureSymbolSize();
 
     const symbols = this.themeManager.getSymbols();
     const scatterSymbolIndex = 7; // Scatter index is 7
@@ -120,7 +153,7 @@ export class ReelManager {
 
       // Animate the strip endlessly
       reel.spinTween = gsap.to(reel.strip, {
-        y: this.symbolSize * 3,
+        y: symbolSize * 3,
         duration: 0.15,
         ease: 'none',
         repeat: -1,
@@ -179,7 +212,7 @@ export class ReelManager {
         }
 
         // Reset and animate stop with elastic bounce
-        gsap.set(reel.strip, { y: -this.symbolSize * 3, force3D: true });
+        gsap.set(reel.strip, { y: -symbolSize * 3, force3D: true });
         gsap.to(reel.strip, {
           y: 0,
           duration: 0.45,
@@ -258,6 +291,25 @@ export class ReelManager {
       clearInterval(this.tickInterval);
       this.tickInterval = null;
     }
+
+    this.spinning = false;
+  }
+
+  stopAll() {
+    if (this.tickInterval) {
+      clearInterval(this.tickInterval);
+      this.tickInterval = null;
+    }
+
+    this.reels.forEach(reel => {
+      if (reel.spinTween) {
+        reel.spinTween.kill();
+        reel.spinTween = null;
+      }
+      gsap.killTweensOf(reel.strip);
+      gsap.set(reel.strip, { y: 0 });
+      reel.element.classList.remove('reel-spinning', 'anticipating');
+    });
 
     this.spinning = false;
   }
